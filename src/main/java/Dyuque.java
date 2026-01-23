@@ -1,20 +1,28 @@
+import java.util.Objects;
+import java.util.Scanner;
+
 public class Dyuque {
+
+    private static final String EXIT_CODE = "bye";
+
     public static void main(String[] args) {
-        /*
-        String logo = " ____        _        \n"
-                + "|  _ \\ _   _| | _____ \n"
-                + "| | | | | | | |/ / _ \\\n"
-                + "| |_| | |_| |   <  __/\n"
-                + "|____/ \\__,_|_|\\_\\___|\n";
-        System.out.println("Hello from\n" + logo);
-         */
+        new Dyuque().newChat();
+    }
+
+    public void newChat() {
         printLine();
         printGreet();
-        printExit();
+
+        String input;
+        do {
+            input = scanInput();
+            parseInput(input);
+        } while (!Objects.equals(input, "bye"));
     }
 
     public static void printLine() {
-        System.out.println("____________________________________________________________");
+        System.out.print("__________________________________________________");
+        System.out.println();
     }
 
     public static void printGreet() {
@@ -26,5 +34,20 @@ public class Dyuque {
     public static void printExit() {
         System.out.println("Bye. Hope to see you again soon!");
         printLine();
+    }
+
+    public static String scanInput() {
+        System.out.println();
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextLine();
+    }
+
+    public static void parseInput(String input) {
+        printLine();
+        if (Objects.equals(input, EXIT_CODE)) {
+            printExit();
+        } else {
+            System.out.println(input);
+        }
     }
 }
