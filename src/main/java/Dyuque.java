@@ -5,8 +5,14 @@ public class Dyuque {
 
     private static final String EXIT_CODE = "bye";
 
+    private List list;
+
     public static void main(String[] args) {
         new Dyuque().newChat();
+    }
+
+    public Dyuque(){
+        this.list = new List();
     }
 
     public void newChat() {
@@ -44,9 +50,10 @@ public class Dyuque {
         printLine();
         if (Objects.equals(input, EXIT_CODE)) {
             printExit();
+        } else if (Objects.equals(input, "list")) {
+            list.read();
         } else {
-            System.out.println(input);
-            printLine();
+            list.add(input);
         }
     }
 }
