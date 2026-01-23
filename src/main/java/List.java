@@ -13,6 +13,7 @@ public class List {
         if (size < elements.length) {
             elements[size] = element;
             size++;
+            System.out.println("added: " + element);
             return true;
         }
         return false; // Array full
@@ -27,6 +28,7 @@ public class List {
 
     public void read() {
         for (int i = 0; i < size; i++) {
+            System.out.print((i+1) + ". ");
             System.out.println(elements[i]);
         }
     }

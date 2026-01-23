@@ -18,6 +18,7 @@ public class Dyuque {
     public void newChat() {
         printGreet();
 
+        System.out.println("Enter a new task or command:");
         String input;
         do {
             input = scanInput();
@@ -33,6 +34,10 @@ public class Dyuque {
     public void printGreet() {
         System.out.println("Hello! I'm Dyuque");
         System.out.println("What can I do for you?");
+        printLine();
+        System.out.println("Commands:");
+        System.out.println("  \"list\" - list stored tasks");
+        System.out.println("  \"bye\" - quit Dyuque");
         printLine();
     }
 
