@@ -10,44 +10,43 @@ public class Dyuque {
     }
 
     public void newChat() {
-        printLine();
         printGreet();
 
         String input;
         do {
             input = scanInput();
             parseInput(input);
-        } while (!Objects.equals(input, "bye"));
+        } while (!Objects.equals(input, EXIT_CODE));
     }
 
-    public static void printLine() {
+    public void printLine() {
         System.out.print("__________________________________________________");
         System.out.println();
     }
 
-    public static void printGreet() {
+    public void printGreet() {
         System.out.println("Hello! I'm Dyuque");
         System.out.println("What can I do for you?");
         printLine();
     }
 
-    public static void printExit() {
+    public void printExit() {
         System.out.println("Bye. Hope to see you again soon!");
-        printLine();
     }
 
-    public static String scanInput() {
+    public String scanInput() {
         System.out.println();
         Scanner scanner = new Scanner(System.in);
         return scanner.nextLine();
     }
 
-    public static void parseInput(String input) {
+    public void parseInput(String input) {
         printLine();
         if (Objects.equals(input, EXIT_CODE)) {
             printExit();
         } else {
             System.out.println(input);
+            printLine();
         }
     }
 }
