@@ -51,12 +51,20 @@ public class Dyuque {
         return scanner.nextLine();
     }
 
+    public String[] parseCommand(String input) {
+        return input.split(" ", 2);
+    }
+
     public void parseInput(String input) {
         printLine();
         if (Objects.equals(input, EXIT_CODE)) {
             printExit();
         } else if (Objects.equals(input, "list")) {
             todoList.read();
+        } else if (Objects.equals(parseCommand(input)[0], "mark")) {
+            todoList.mark(Integer.parseInt(parseCommand(input)[1]) - 1);
+        } else if (Objects.equals(parseCommand(input)[0], "unmark")) {
+            todoList.unmark(Integer.parseInt(parseCommand(input)[1]) - 1);
         } else {
             todoList.add(input);
         }
