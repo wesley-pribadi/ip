@@ -1,11 +1,10 @@
-public class List {
-    private final int MAX_SIZE = 100;
-
+public class TodoList {
     private String[] elements;
     private int size;
 
-    public List() {
-        this.elements = new String[MAX_SIZE];
+    public TodoList() {
+        int LIST_SIZE = 100;
+        this.elements = new String[LIST_SIZE];
         this.size = 0;
     }
 

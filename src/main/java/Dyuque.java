@@ -5,14 +5,14 @@ public class Dyuque {
 
     private static final String EXIT_CODE = "bye";
 
-    private List list;
+    private TodoList todoList;
 
     public static void main(String[] args) {
         new Dyuque().newChat();
     }
 
     public Dyuque(){
-        this.list = new List();
+        this.todoList = new TodoList();
     }
 
     public void newChat() {
@@ -56,9 +56,9 @@ public class Dyuque {
         if (Objects.equals(input, EXIT_CODE)) {
             printExit();
         } else if (Objects.equals(input, "list")) {
-            list.read();
+            todoList.read();
         } else {
-            list.add(input);
+            todoList.add(input);
         }
     }
 }
