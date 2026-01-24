@@ -1,18 +1,20 @@
-public class TodoList {
-    private TodoListItem[] items;
+public class TaskList {
+    private Task[] items;
     private int size;
 
-    public TodoList() {
+    public TaskList() {
         int LIST_SIZE = 100;
-        this.items = new TodoListItem[LIST_SIZE];
+        this.items = new Task[LIST_SIZE];
         this.size = 0;
     }
 
-    public void add(String description) {
+    public void add(Task task) {
         if (size < items.length) {
-            items[size] = new TodoListItem(description);
+            items[size] = task;
             size++;
-            System.out.println("added: " + description);
+
+            System.out.println("Added:\n" + task.toString());
+            System.out.println("You now have (" + size + ") tasks.");
         } else {
             throw new IllegalStateException("Array is full");
         }
@@ -38,7 +40,8 @@ public class TodoList {
         }
     }
 
-    public void read() {
+    public void list() {
+        System.out.println("You have (" + size + ") tasks:");
         for (int i = 0; i < size; i++) {
             System.out.print((i+1) + ". ");
             System.out.println(items[i].toString());
