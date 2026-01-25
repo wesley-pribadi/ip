@@ -112,7 +112,7 @@ public class Dyuque {
                 }
                 yield new InputBundle(command, new String[]{ parts[0].trim(), parts[1].trim() });
             }
-            default -> throw new DyuqueException("Command not understood");
+            default -> throw new DyuqueException("Command not understood - Please enter a supported command");
         };
     }
 
@@ -139,7 +139,7 @@ public class Dyuque {
             case "mark" -> taskList.setMarkedState(TaskList.markedState.MARKED, Integer.parseInt(arguments[0]));
             case "unmark" -> taskList.setMarkedState(TaskList.markedState.UNMARKED, Integer.parseInt(arguments[0]));
 
-            default -> throw new DyuqueException("Command not understood");
+            default -> throw new DyuqueException("Command not understood - Please enter a supported command");
         }
     }
 }
