@@ -6,7 +6,8 @@ public class Dyuque {
 
     private static final String EXIT_CODE = "bye";
 
-    private TaskList taskList;
+    private final Scanner scanner;
+    private final TaskList taskList;
     private String input;
 
     public static void main(String[] args) {
@@ -14,6 +15,7 @@ public class Dyuque {
     }
 
     public Dyuque(){
+        this.scanner = new Scanner(System.in);
         this.taskList = new TaskList();
         this.input = "";
     }
@@ -48,7 +50,6 @@ public class Dyuque {
     }
 
     public String scanInput() {
-        Scanner scanner = new Scanner(System.in);
         return scanner.nextLine();
     }
 
