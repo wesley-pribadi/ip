@@ -1,9 +1,9 @@
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
 
 public class Dyuque {
-
+    private static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_RED = "\u001B[31m";
     private static final String EXIT_CODE = "bye";
 
     private final Scanner scanner;
@@ -22,10 +22,17 @@ public class Dyuque {
 
     public void newChat() {
         printGreet();
+
         do {
             System.out.print("> ");
-            input = scanInput();
-            executeCommand(input);
+            try {
+                input = scanInput();
+                executeCommand(input);
+            } catch (DyuqueException e) {
+                System.out.print(ANSI_RED);
+                System.out.println("[ERROR] " + e.getMessage());
+                System.out.print(ANSI_RESET);
+            }
         } while (!Objects.equals(input, EXIT_CODE));
     }
 
@@ -59,57 +66,80 @@ public class Dyuque {
         return scanner.nextLine();
     }
 
-    public String[] parseCommand(String input) {
-        // Splits "deadline return book /by Sunday" into ["deadline", "return book /by Sunday"]
-        String[] commandAndArguments = input.split(" ", 2);
-        String command = commandAndArguments[0];
-        String arguments = (commandAndArguments.length > 1)
-                ? commandAndArguments[1]
-                : commandAndArguments[0]; // TODO: Make this less hacky.
+    public InputBundle parseCommand(String input) throws DyuqueException {
+        // Solution below inspired from multiple LLMs including ChatGPT, Claude, and Google AI
 
-        String[] parts;
-        switch (command) {
-            case EXIT_CODE:
-            case "list":
-                return new String[]{command};
-            case "mark":
-            case "unmark":
-            case "todo":
-                return new String[]{command, arguments};
-            case "deadline":
-                // Splits "return book /by Sunday" into ["return book", "Sunday"]
-                parts = arguments.split(" /by ");
-                return new String[]{"deadline", parts[0], parts[1]};
-            case "event":
-                // Splits "meeting /from Mon 2pm /to 4pm" into ["meeting", "Mon 2pm", "4pm"]
-                parts = arguments.split(" /from | /to ");
-                return new String[]{"event", parts[0], parts[1], parts[2]};
-            default:
-                return commandAndArguments;
-        }
+        if (input.isBlank()) throw new DyuqueException("Please enter a command");
+
+        String[] commandAndArguments = input.trim().split(" ", 2); /* Splits "deadline return book /by Sunday"
+                                                               into ["deadline", "return book /by Sunday"] */
+        String command = commandAndArguments[0];
+        String arguments = (commandAndArguments.length == 2)
+                ? commandAndArguments[1].trim()
+                : "";
+        
+        return switch (command) {
+            case EXIT_CODE, "list" -> new InputBundle(command, new String[0]);
+            case "todo" -> {
+                if (arguments.isBlank()) throw new DyuqueException("Usage: todo <description>");
+                yield new InputBundle(command, new String[]{ arguments });
+            }
+            case "mark", "unmark" -> {
+                if (arguments.isBlank()) throw new DyuqueException("Usage: " + command + " <index>");
+                yield new InputBundle(command, new String[]{ arguments });
+            }
+            case "event" -> {
+                // Avoid regex split, this is less fragile
+                int fromPos = arguments.indexOf(" /from ");
+                int toPos = arguments.indexOf(" /to ");
+                if (fromPos < 0 || toPos < 0 || toPos < fromPos) {
+                    throw new DyuqueException("Usage: event <description> /from <date> /to <date>");
+                }
+                String desc = arguments.substring(0, fromPos).trim();
+                String from = arguments.substring(fromPos + " /from ".length(), toPos).trim();
+                String to = arguments.substring(toPos + " /to ".length()).trim();
+                if (desc.isBlank() || from.isBlank() || to.isBlank()) {
+                    throw new DyuqueException("Usage: event <description> /from <date> /to <date>");
+                }
+
+                yield new InputBundle(command, new String[]{ desc, from, to });
+            }
+            case "deadline" -> {
+                String[] parts = arguments.split(" /by ", 2);          /* Splits "return book /by Sunday"
+                                                                       into ["return book", "Sunday"] */
+                if (parts.length != 2 || parts[0].isBlank() || parts[1].isBlank()) {
+                    throw new DyuqueException("Usage: deadline <description> /by <date>");
+                }
+                yield new InputBundle(command, new String[]{ parts[0].trim(), parts[1].trim() });
+            }
+            default -> throw new DyuqueException("Command not understood");
+        };
     }
 
-    public void executeCommand(String input) {
+    public void executeCommand(String input) throws DyuqueException {
         printLine();
-        String[] commandAndArguments = parseCommand(input);
-        String command = commandAndArguments[0];
-        String[] arguments = Arrays.copyOfRange(commandAndArguments, 1, commandAndArguments.length);
+        InputBundle inputBundle = parseCommand(input);
+        String command = inputBundle.command();
+        String[] arguments = inputBundle.argument();
         /*  Elements of arguments:
                 to-do:       description
                 deadline:    description, dueDate
                 event:       description, fromDate, toDate
+                mark/unmark: index
          */
 
         switch (command) {
             case EXIT_CODE ->   printExit();
             case "list" ->      taskList.list();
-            case "mark" ->      taskList.setMarkedState(TaskList.markedState.MARKED, Integer.parseInt(arguments[0]));
-            case "unmark" ->    taskList.setMarkedState(TaskList.markedState.UNMARKED, Integer.parseInt(arguments[0]));
 
             case "todo" ->      taskList.add(new Todo(arguments[0]));
             case "deadline" ->  taskList.add(new Deadline(arguments[0], arguments[1]));
             case "event" ->     taskList.add(new Event(arguments[0], arguments[1], arguments[2]));
-            default ->          System.out.println("Error: Please specify task type followed by task description");
+
+            case "mark" -> taskList.setMarkedState(TaskList.markedState.MARKED, Integer.parseInt(arguments[0]));
+            case "unmark" -> taskList.setMarkedState(TaskList.markedState.UNMARKED, Integer.parseInt(arguments[0]));
+
+            default -> throw new DyuqueException("Command not understood");
         }
     }
 }
