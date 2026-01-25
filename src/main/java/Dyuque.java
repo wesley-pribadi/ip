@@ -39,8 +39,14 @@ public class Dyuque {
         System.out.println("What can I do for you?");
         printLine();
         System.out.println("Commands:");
-        System.out.println("  \"list\" - list stored tasks");
-        System.out.println("  \"bye\" - quit Dyuque");
+        System.out.println("  \"list\" --- list stored tasks");
+        System.out.println("  \"mark\" --- mark a task as done");
+        System.out.println("  \"unmark\" - unmark a task as done");
+        System.out.println("  \"bye\" ---- quit Dyuque");
+        System.out.println("Task types:");
+        System.out.println("  \"todo\" ----- todo <description>");
+        System.out.println("  \"deadline\" - deadline <description> \\by <date>");
+        System.out.println("  \"event\" ---- event <description> \\from <date> \\to <date>");
         printLine();
         System.out.println("Enter a new task or command:");
     }
