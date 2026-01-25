@@ -1,6 +1,10 @@
 public class TaskList {
-    private Task[] items;
+    private final Task[] items;
     private int size;
+    protected enum markedState {
+        MARKED,
+        UNMARKED
+    }
 
     public TaskList() {
         int LIST_SIZE = 100;
@@ -20,20 +24,19 @@ public class TaskList {
         }
     }
 
-    public void mark(int index) {
+    protected void setMarkedState(markedState state, int index) {
+        index--;
         if (index >= 0 && index < size) {
-            items[index].markDone();
-            System.out.println("Nice! I've marked this task as done:");
-            System.out.println(items[index].toString());
-        } else {
-            throw new IndexOutOfBoundsException("Index " + index + " not in list of size " + size);
-        }
-    }
-
-    public void unmark(int index) {
-        if (index >= 0 && index < size) {
-            items[index].markUndone();
-            System.out.println("OK, I've marked this task as not done yet:");
+            switch (state) {
+                case MARKED:
+                    items[index].markDone();
+                    System.out.println("Nice! I've marked this task as done:");
+                    break;
+                case UNMARKED:
+                    items[index].markUndone();
+                    System.out.println("OK, I've marked this task as not done yet:");
+                    break;
+            }
             System.out.println(items[index].toString());
         } else {
             throw new IndexOutOfBoundsException("Index " + index + " not in list of size " + size);

@@ -61,29 +61,25 @@ public class Dyuque {
                 ? commandAndArguments[1]
                 : commandAndArguments[0]; // TODO: Make this less hacky.
 
+        String[] parts;
         switch (command) {
-            case EXIT_CODE -> {
-                return new String[]{EXIT_CODE};
-            }
-            case "list" -> {
-                return new String[]{"list"};
-            }
-            case "todo" -> {
-                return new String[]{"todo", arguments};
-            }
-            case "deadline" -> {
+            case EXIT_CODE:
+            case "list":
+                return new String[]{command};
+            case "mark":
+            case "unmark":
+            case "todo":
+                return new String[]{command, arguments};
+            case "deadline":
                 // Splits "return book /by Sunday" into ["return book", "Sunday"]
-                String[] parts = arguments.split(" /by ");
+                parts = arguments.split(" /by ");
                 return new String[]{"deadline", parts[0], parts[1]};
-            }
-            case "event" -> {
+            case "event":
                 // Splits "meeting /from Mon 2pm /to 4pm" into ["meeting", "Mon 2pm", "4pm"]
-                String[] parts = arguments.split(" /from | /to ");
+                parts = arguments.split(" /from | /to ");
                 return new String[]{"event", parts[0], parts[1], parts[2]};
-            }
-            default -> {
+            default:
                 return commandAndArguments;
-            }
         }
     }
 
@@ -101,6 +97,9 @@ public class Dyuque {
         switch (command) {
             case EXIT_CODE ->   printExit();
             case "list" ->      taskList.list();
+            case "mark" ->      taskList.setMarkedState(TaskList.markedState.MARKED, Integer.parseInt(arguments[0]));
+            case "unmark" ->    taskList.setMarkedState(TaskList.markedState.UNMARKED, Integer.parseInt(arguments[0]));
+
             case "todo" ->      taskList.add(new Todo(arguments[0]));
             case "deadline" ->  taskList.add(new Deadline(arguments[0], arguments[1]));
             case "event" ->     taskList.add(new Event(arguments[0], arguments[1], arguments[2]));
