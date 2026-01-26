@@ -11,10 +11,11 @@ public class TaskList {
         this.items = new ArrayList<>();
     }
 
-    public void list() throws DyuqueException {
+    public void list() {
         System.out.println("You have (" + size() + ") tasks:");
-        for (int i = 0; i < size(); i++) {
-            System.out.println((i + 1) + ". " + get(i));
+        int i = 1;
+        for (Task task : items) {
+            System.out.println((i++) + ". " + task);
         }
     }
 
