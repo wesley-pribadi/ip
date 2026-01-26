@@ -76,4 +76,22 @@ You have (4) tasks:
 3. [E][ ] project meeting (from: Mon 2pm) (to: 4pm)
 4. [D][ ] do homework (by: no idea :-p)
 > __________________________________________________
+Removed:
+[T][ ] borrow book
+You now have (3) tasks.
+> __________________________________________________
+Removed:
+[E][ ] project meeting (from: Mon 2pm) (to: 4pm)
+You now have (2) tasks.
+> __________________________________________________
+[31m[ERROR] Task 3 does not exist.
+There are only 2 tasks
+[0m> __________________________________________________
+[31m[ERROR] Task 4 does not exist.
+There are only 2 tasks
+[0m> __________________________________________________
+You have (2) tasks:
+1. [D][ ] return book (by: Sunday)
+2. [D][ ] do homework (by: no idea :-p)
+> __________________________________________________
 Goodbye, hope to see you again soon!

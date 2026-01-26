@@ -1,14 +1,40 @@
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Scanner;
+import java.util.Set;
 
 public class Dyuque {
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_RED = "\u001B[31m";
-    private static final String EXIT_CODE = "bye";
+
+    protected enum Command {
+        LIST("list", "ls"),
+        DELETE("delete", "remove"),
+        TODO("todo"),
+        DEADLINE("deadline"),
+        EVENT("event"),
+        MARK("mark"),
+        UNMARK("unmark"),
+        EXIT_CODE("bye", "exit");
+
+        private final Set<String> keywords;
+
+        Command(String... keywords) {
+            this.keywords = Set.of(keywords);
+        }
+
+        protected static Optional<Command> get(String keyword) {
+            for (Command command : values()) {
+                if (command.keywords.contains(keyword)) {
+                    return Optional.of((command));
+                }
+            }
+            return Optional.empty();
+        }
+    }
 
     private final Scanner scanner;
     private final TaskList taskList;
-    private String input;
+    private Boolean continueExecution;
 
     public static void main(String[] args) {
         new Dyuque().newChat();
@@ -17,7 +43,7 @@ public class Dyuque {
     public Dyuque(){
         this.scanner = new Scanner(System.in);
         this.taskList = new TaskList();
-        this.input = "";
+        this.continueExecution = true;
     }
 
     public void newChat() {
@@ -26,14 +52,13 @@ public class Dyuque {
         do {
             System.out.print("> ");
             try {
-                input = scanInput();
-                executeCommand(input);
+                continueExecution = executeCommand(scanInput());
             } catch (DyuqueException e) {
                 System.out.print(ANSI_RED);
                 System.out.println("[ERROR] " + e.getMessage());
                 System.out.print(ANSI_RESET);
             }
-        } while (!Objects.equals(input, EXIT_CODE));
+        } while (continueExecution);
     }
 
     public void printLine() {
@@ -69,31 +94,34 @@ public class Dyuque {
         return scanner.nextLine();
     }
 
-    public InputBundle parseCommand(String input) throws DyuqueException {
+    public CommandArgumentPair parseCommand(String input) throws DyuqueException {
         // Solution below inspired from multiple LLMs including ChatGPT, Claude, and Google AI
 
         if (input.isBlank()) throw new DyuqueException("Please enter a command");
 
         String[] commandAndArguments = input.trim().split(" ", 2); /* Splits "deadline return book /by Sunday"
                                                                into ["deadline", "return book /by Sunday"] */
-        String command = commandAndArguments[0];
+        String commandStr = commandAndArguments[0];
+        Command command = Command
+                .get(commandStr)
+                .orElseThrow(() -> new DyuqueException("Unknown command: " + commandStr));
         String arguments = (commandAndArguments.length == 2)
                 ? commandAndArguments[1].trim()
                 : "";
         
         return switch (command) {
-            case EXIT_CODE, "list" -> new InputBundle(command, new String[0]);
+            case EXIT_CODE, LIST -> new CommandArgumentPair(command, new String[0]);
 
-            case "mark", "unmark", "delete" -> {
-                if (arguments.isBlank()) throw new DyuqueException("Usage: " + command + " <index>");
-                yield new InputBundle(command, new String[]{ arguments });
+            case MARK, UNMARK, DELETE -> {
+                if (arguments.isBlank()) throw new DyuqueException("Usage: " + commandStr + " <index>");
+                yield new CommandArgumentPair(command, new String[]{ arguments });
             }
 
-            case "todo" -> {
+            case TODO -> {
                 if (arguments.isBlank()) throw new DyuqueException("Usage: todo <description>");
-                yield new InputBundle(command, new String[]{ arguments });
+                yield new CommandArgumentPair(command, new String[]{ arguments });
             }
-            case "event" -> {
+            case EVENT -> {
                 // Avoid regex split, this is less fragile
                 int fromPos = arguments.indexOf(" /from ");
                 int toPos = arguments.indexOf(" /to ");
@@ -107,25 +135,24 @@ public class Dyuque {
                     throw new DyuqueException("Usage: event <description> /from <date> /to <date>");
                 }
 
-                yield new InputBundle(command, new String[]{ desc, from, to });
+                yield new CommandArgumentPair(command, new String[]{ desc, from, to });
             }
-            case "deadline" -> {
+            case DEADLINE -> {
                 String[] parts = arguments.split(" /by ", 2);          /* Splits "return book /by Sunday"
                                                                        into ["return book", "Sunday"] */
                 if (parts.length != 2 || parts[0].isBlank() || parts[1].isBlank()) {
                     throw new DyuqueException("Usage: deadline <description> /by <date>");
                 }
-                yield new InputBundle(command, new String[]{ parts[0].trim(), parts[1].trim() });
+                yield new CommandArgumentPair(command, new String[]{ parts[0].trim(), parts[1].trim() });
             }
-            default -> throw new DyuqueException("Command not understood - Please enter a supported command");
         };
     }
 
-    public void executeCommand(String input) throws DyuqueException {
+    public Boolean executeCommand(String input) throws DyuqueException {
         printLine();
-        InputBundle inputBundle = parseCommand(input);
-        String command = inputBundle.command();
-        String[] arguments = inputBundle.argument();
+        CommandArgumentPair commandArgumentPair = parseCommand(input);
+        Command command = commandArgumentPair.command();
+        String[] arguments = commandArgumentPair.argument();
         /*  Elements of arguments:
                 delete/mark/unmark: index
                 to-do:              description
@@ -134,21 +161,23 @@ public class Dyuque {
          */
         try {
             switch (command) {
-                case EXIT_CODE -> printExit();
-                case "list" -> taskList.list();
+                case EXIT_CODE -> {
+                    printExit();
+                    return false;
+                }
+                case LIST -> taskList.list();
 
-                case "todo" -> taskList.add(new Todo(arguments[0]));
-                case "deadline" -> taskList.add(new Deadline(arguments[0], arguments[1]));
-                case "event" -> taskList.add(new Event(arguments[0], arguments[1], arguments[2]));
+                case TODO -> taskList.add(new Todo(arguments[0]));
+                case DEADLINE -> taskList.add(new Deadline(arguments[0], arguments[1]));
+                case EVENT -> taskList.add(new Event(arguments[0], arguments[1], arguments[2]));
 
-                case "delete" -> taskList.delete(Integer.parseInt(arguments[0]) - 1);
-                case "mark" -> taskList.setMarkedState(TaskList.markedState.MARKED, Integer.parseInt(arguments[0]) - 1);
-                case "unmark" -> taskList.setMarkedState(TaskList.markedState.UNMARKED, Integer.parseInt(arguments[0]) - 1);
-
-                default -> throw new DyuqueException("Command not understood - Please enter a supported command");
+                case DELETE -> taskList.delete(Integer.parseInt(arguments[0]) - 1);
+                case MARK -> taskList.setMarkedState(TaskList.markedState.MARKED, Integer.parseInt(arguments[0]) - 1);
+                case UNMARK -> taskList.setMarkedState(TaskList.markedState.UNMARKED, Integer.parseInt(arguments[0]) - 1);
             }
         } catch (NumberFormatException nfe) {
             throw new DyuqueException("Expected integer but received something else...", nfe);
         }
+        return true;
     }
 }
