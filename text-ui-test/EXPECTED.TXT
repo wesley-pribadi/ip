@@ -3,8 +3,11 @@ What can I do for you?
 __________________________________________________
 Commands:
   "list" --- list stored tasks
+  "delete" - delete a task
   "mark" --- mark a task as done
+             mark <task number>
   "unmark" - unmark a task as done
+             unmark <task number>
   "bye" ---- quit Dyuque
 Task types:
   todo ----- "todo <description>"

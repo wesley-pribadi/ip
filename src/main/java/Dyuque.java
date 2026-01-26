@@ -47,8 +47,11 @@ public class Dyuque {
         printLine();
         System.out.println("Commands:");
         System.out.println("  \"list\" --- list stored tasks");
+        System.out.println("  \"delete\" - delete a task");
         System.out.println("  \"mark\" --- mark a task as done");
+        System.out.println("             mark <task number>");
         System.out.println("  \"unmark\" - unmark a task as done");
+        System.out.println("             unmark <task number>");
         System.out.println("  \"bye\" ---- quit Dyuque");
         System.out.println("Task types:");
         System.out.println("  todo ----- \"todo <description>\"");
@@ -80,12 +83,14 @@ public class Dyuque {
         
         return switch (command) {
             case EXIT_CODE, "list" -> new InputBundle(command, new String[0]);
-            case "todo" -> {
-                if (arguments.isBlank()) throw new DyuqueException("Usage: todo <description>");
+
+            case "mark", "unmark", "delete" -> {
+                if (arguments.isBlank()) throw new DyuqueException("Usage: " + command + " <index>");
                 yield new InputBundle(command, new String[]{ arguments });
             }
-            case "mark", "unmark" -> {
-                if (arguments.isBlank()) throw new DyuqueException("Usage: " + command + " <index>");
+
+            case "todo" -> {
+                if (arguments.isBlank()) throw new DyuqueException("Usage: todo <description>");
                 yield new InputBundle(command, new String[]{ arguments });
             }
             case "event" -> {
@@ -122,10 +127,10 @@ public class Dyuque {
         String command = inputBundle.command();
         String[] arguments = inputBundle.argument();
         /*  Elements of arguments:
-                to-do:       description
-                deadline:    description, dueDate
-                event:       description, fromDate, toDate
-                mark/unmark: index
+                delete/mark/unmark: index
+                to-do:              description
+                deadline:           description, dueDate
+                event:              description, fromDate, toDate
          */
         try {
             switch (command) {
@@ -136,6 +141,7 @@ public class Dyuque {
                 case "deadline" -> taskList.add(new Deadline(arguments[0], arguments[1]));
                 case "event" -> taskList.add(new Event(arguments[0], arguments[1], arguments[2]));
 
+                case "delete" -> taskList.delete(Integer.parseInt(arguments[0]) - 1);
                 case "mark" -> taskList.setMarkedState(TaskList.markedState.MARKED, Integer.parseInt(arguments[0]) - 1);
                 case "unmark" -> taskList.setMarkedState(TaskList.markedState.UNMARKED, Integer.parseInt(arguments[0]) - 1);
 
