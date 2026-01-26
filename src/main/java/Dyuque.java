@@ -127,19 +127,22 @@ public class Dyuque {
                 event:       description, fromDate, toDate
                 mark/unmark: index
          */
+        try {
+            switch (command) {
+                case EXIT_CODE -> printExit();
+                case "list" -> taskList.list();
 
-        switch (command) {
-            case EXIT_CODE ->   printExit();
-            case "list" ->      taskList.list();
+                case "todo" -> taskList.add(new Todo(arguments[0]));
+                case "deadline" -> taskList.add(new Deadline(arguments[0], arguments[1]));
+                case "event" -> taskList.add(new Event(arguments[0], arguments[1], arguments[2]));
 
-            case "todo" ->      taskList.add(new Todo(arguments[0]));
-            case "deadline" ->  taskList.add(new Deadline(arguments[0], arguments[1]));
-            case "event" ->     taskList.add(new Event(arguments[0], arguments[1], arguments[2]));
+                case "mark" -> taskList.setMarkedState(TaskList.markedState.MARKED, Integer.parseInt(arguments[0]) - 1);
+                case "unmark" -> taskList.setMarkedState(TaskList.markedState.UNMARKED, Integer.parseInt(arguments[0]) - 1);
 
-            case "mark" -> taskList.setMarkedState(TaskList.markedState.MARKED, Integer.parseInt(arguments[0]));
-            case "unmark" -> taskList.setMarkedState(TaskList.markedState.UNMARKED, Integer.parseInt(arguments[0]));
-
-            default -> throw new DyuqueException("Command not understood - Please enter a supported command");
+                default -> throw new DyuqueException("Command not understood - Please enter a supported command");
+            }
+        } catch (NumberFormatException nfe) {
+            throw new DyuqueException("Expected integer but received something else...", nfe);
         }
     }
 }
