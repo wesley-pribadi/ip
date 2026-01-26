@@ -1,59 +1,58 @@
+import java.util.ArrayList;
+
 public class TaskList {
-    private final Task[] items;
+    //private final Task[] items;
     private final static int LIST_SIZE = 100;
-    private int numOfTasks;
+    private ArrayList<Task> items;
+    //private int numOfTasks;
     protected enum markedState {
         MARKED,
         UNMARKED
     }
 
     public TaskList() {
-        this.items = new Task[LIST_SIZE];
-        this.numOfTasks = 0;
+        this.items = new ArrayList<>();
+        //this.numOfTasks = 0;
     }
 
     public void add(Task task) {
-        if (numOfTasks < items.length) {
-            items[numOfTasks] = task;
-            numOfTasks++;
-
-            System.out.println("Added:\n" + task.toString());
-            System.out.println("You now have (" + numOfTasks + ") tasks.");
-        } else {
-            throw new IllegalStateException("Array is full");
-        }
+        items.add(task);
+        System.out.println("Added:\n" + task.toString());
+        System.out.println("You now have (" + size() + ") tasks.");
     }
 
-    protected void setMarkedState(markedState state, int index) throws DyuqueException {
-        index--;
+    protected void setMarkedState(markedState state, int arrayIndex) throws DyuqueException {
+        // arrayIndex is 0-based
 
-        if (index < 0 || index > items.length) {
-            throw new IndexOutOfBoundsException("Index " + index + " not in max tasklist size of " + LIST_SIZE);
-        } else if (index > numOfTasks) {
-            throw new DyuqueException("Task " + index + " does not exist. There are only " + numOfTasks + " tasks");
+        if (arrayIndex < 0 || (arrayIndex + 1) > size()) {
+            throw new DyuqueException("Task " + (arrayIndex + 1) + " does not exist.\nThere are only " + size() + " tasks");
         } else {
             switch (state) {
                 case MARKED:
-                    items[index].markDone();
+                    get(arrayIndex).markDone();
                     System.out.println("Nice! I've marked this task as done:");
                     break;
                 case UNMARKED:
-                    items[index].markUndone();
+                    get(arrayIndex).markUndone();
                     System.out.println("OK, I've marked this task as not done yet:");
                     break;
             }
-            System.out.println(items[index].toString());
+            System.out.println(get(arrayIndex));
         }
     }
 
     public void list() {
-        System.out.println("You have (" + numOfTasks + ") tasks:");
-        for (int i = 0; i < numOfTasks; i++) {
-            System.out.println((i + 1) + ". " + items[i].toString());
+        System.out.println("You have (" + size() + ") tasks:");
+        for (int i = 0; i < size(); i++) {
+            System.out.println((i + 1) + ". " + get(i));
         }
     }
 
     public int size() {
-        return numOfTasks;
+        return items.size();
+    }
+
+    private Task get(int index) {
+        return items.get(index);
     }
 }
