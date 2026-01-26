@@ -1,10 +1,7 @@
 import java.util.ArrayList;
 
 public class TaskList {
-    //private final Task[] items;
-    private final static int LIST_SIZE = 100;
     private ArrayList<Task> items;
-    //private int numOfTasks;
     protected enum markedState {
         MARKED,
         UNMARKED
@@ -12,7 +9,6 @@ public class TaskList {
 
     public TaskList() {
         this.items = new ArrayList<>();
-        //this.numOfTasks = 0;
     }
 
     public void add(Task task) {
