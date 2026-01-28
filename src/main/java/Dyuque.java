@@ -34,7 +34,7 @@ public class Dyuque {
 
     private final Scanner scanner;
     private final TaskList taskList;
-    private Boolean continueExecution;
+    private Boolean shouldContinueExecution;
 
     public static void main(String[] args) {
         new Dyuque().newChat();
@@ -43,7 +43,7 @@ public class Dyuque {
     public Dyuque(){
         this.scanner = new Scanner(System.in);
         this.taskList = new TaskList();
-        this.continueExecution = true;
+        this.shouldContinueExecution = true;
     }
 
     public void newChat() {
@@ -52,13 +52,13 @@ public class Dyuque {
         do {
             System.out.print("> ");
             try {
-                continueExecution = executeCommand(scanInput());
+                shouldContinueExecution = executeCommand(scanInput());
             } catch (DyuqueException e) {
                 System.out.print(ANSI_RED);
                 System.out.println("[ERROR] " + e.getMessage());
                 System.out.print(ANSI_RESET);
             }
-        } while (continueExecution);
+        } while (shouldContinueExecution);
     }
 
     public void printLine() {
