@@ -97,7 +97,9 @@ public class Dyuque {
     public CommandArgumentPair parseCommand(String input) throws DyuqueException {
         // Solution below inspired from multiple LLMs including ChatGPT, Claude, and Google AI
 
-        if (input.isBlank()) throw new DyuqueException("Please enter a command");
+        if (input.isBlank()) {
+            throw new DyuqueException("Please enter a command");
+        }
 
         String[] commandAndArguments = input.trim().split(" ", 2); /* Splits "deadline return book /by Sunday"
                                                                into ["deadline", "return book /by Sunday"] */
@@ -113,12 +115,16 @@ public class Dyuque {
             case EXIT_CODE, LIST -> new CommandArgumentPair(command, new String[0]);
 
             case MARK, UNMARK, DELETE -> {
-                if (arguments.isBlank()) throw new DyuqueException("Usage: " + commandStr + " <index>");
+                if (arguments.isBlank()) {
+                    throw new DyuqueException("Usage: " + commandStr + " <index>");
+                }
                 yield new CommandArgumentPair(command, new String[]{ arguments });
             }
 
             case TODO -> {
-                if (arguments.isBlank()) throw new DyuqueException("Usage: todo <description>");
+                if (arguments.isBlank()) {
+                    throw new DyuqueException("Usage: todo <description>");
+                }
                 yield new CommandArgumentPair(command, new String[]{ arguments });
             }
             case EVENT -> {
