@@ -16,4 +16,9 @@ public class Event extends Task{
                 + " (from: " + fromDate + ")"
                 + " (to: " + toDate + ")";
     }
+
+    @Override
+    public String toStorageString() {
+        return "E | " + doneFlag() + " | " + description + " | " + fromDate + " | " + toDate;
+    }
 }

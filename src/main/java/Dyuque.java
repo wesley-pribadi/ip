@@ -5,6 +5,12 @@ import java.util.Set;
 public class Dyuque {
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_RED = "\u001B[31m";
+    private static final String SAVE_PATH = "./data/dyuque.txt";
+
+    private final Scanner scanner;
+    private final Storage storage;
+    private final TaskList taskList;
+    private Boolean shouldContinueExecution;
 
     protected enum Command {
         LIST("list", "ls"),
@@ -32,18 +38,24 @@ public class Dyuque {
         }
     }
 
-    private final Scanner scanner;
-    private final TaskList taskList;
-    private Boolean shouldContinueExecution;
-
-    public static void main(String[] args) {
-        new Dyuque().newChat();
+    public Dyuque() throws DyuqueException {
+        this.scanner = new Scanner(System.in);
+        this.storage = new Storage(SAVE_PATH);
+        this.taskList = new TaskList(storage.load(), storage);
+        // if file/folder missing: Storage creates them and loads empty list
+        // if reading fails: throw and exit (no overwrite risk)
+        this.shouldContinueExecution = true;
     }
 
-    public Dyuque(){
-        this.scanner = new Scanner(System.in);
-        this.taskList = new TaskList();
-        this.shouldContinueExecution = true;
+    public static void main(String[] args) {
+        try {
+            new Dyuque().newChat();
+        } catch (DyuqueException e) {
+            System.out.print(ANSI_RED);
+            System.out.println("[FATAL] Failed to load saved tasks:");
+            System.out.println("[FATAL] " + e.getMessage());
+            System.out.print(ANSI_RESET);
+        }
     }
 
     public void newChat() {

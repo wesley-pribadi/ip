@@ -1,14 +1,17 @@
 import java.util.ArrayList;
 
 public class TaskList {
-    private ArrayList<Task> items;
+    private final ArrayList<Task> items;
+    private final Storage storage;
+
     protected enum markedState {
         MARKED,
         UNMARKED
     }
 
-    public TaskList() {
-        this.items = new ArrayList<>();
+    public TaskList(ArrayList<Task> initialItems, Storage storage) {
+        this.items = initialItems;
+        this.storage = storage;
     }
 
     public void list() {
@@ -19,16 +22,18 @@ public class TaskList {
         }
     }
 
-    public void add(Task task) {
+    public void add(Task task) throws DyuqueException {
         items.add(task);
         System.out.println("Added:\n" + task.toString());
         printSize();
+        saveIfEnabled();
     }
 
     public void delete(int arrayIndex) throws DyuqueException {
         System.out.println("Removed:\n" + get(arrayIndex));
         items.remove(get(arrayIndex));
         printSize();
+        saveIfEnabled();
     }
 
     protected void setMarkedState(markedState state, int arrayIndex) throws DyuqueException {
@@ -47,6 +52,7 @@ public class TaskList {
                 break;
         }
         System.out.println(task);
+        saveIfEnabled();
     }
 
     public int size() {
@@ -64,5 +70,11 @@ public class TaskList {
 
     private void printSize() {
         System.out.println("You now have (" + size() + ") tasks.");
+    }
+
+    private void saveIfEnabled() throws DyuqueException {
+        if (storage != null) {
+            storage.save(items);
+        }
     }
 }
