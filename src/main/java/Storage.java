@@ -16,7 +16,7 @@ public class Storage {
         this.filePath = Paths.get(relativePath);
     }
 
-    public void ensureExists() throws DyuqueException {
+    public void ensureStorageExists() throws DyuqueException {
         try {
             Path parent = filePath.getParent();
             if (parent != null) {
@@ -31,7 +31,7 @@ public class Storage {
     }
 
     public ArrayList<Task> load() throws DyuqueException {
-        ensureExists();
+        ensureStorageExists();
 
         ArrayList<Task> tasks = new ArrayList<>();
         try (BufferedReader br = Files.newBufferedReader(filePath, StandardCharsets.UTF_8)) {
@@ -50,7 +50,7 @@ public class Storage {
     }
 
     public void save(List<Task> tasks) throws DyuqueException {
-        ensureExists();
+        ensureStorageExists();
 
         try (BufferedWriter bw = Files.newBufferedWriter(filePath, StandardCharsets.UTF_8)) {
             for (Task task : tasks) {
