@@ -13,4 +13,9 @@ public class Deadline extends Task {
                 + description
                 + " (by: " + dueDate + ")";
     }
+
+    @Override
+    public String toStorageString() {
+        return "D | " + doneFlag() + " | " + description + " | " + dueDate;
+    }
 }

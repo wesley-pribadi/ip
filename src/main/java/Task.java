@@ -18,4 +18,10 @@ public abstract class Task {
     public String getDescription() {
         return this.description;
     }
+
+    protected String doneFlag() {
+        return isDone ? "1" : "0";
+    }
+
+    public abstract String toStorageString();
 }

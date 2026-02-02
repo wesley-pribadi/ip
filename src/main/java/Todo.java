@@ -10,4 +10,9 @@ public class Todo extends Task {
                 + (isDone ? "[X] " : "[ ] ")
                 + description;
     }
+
+    @Override
+    public String toStorageString() {
+        return "T | " + doneFlag() + " | " + description;
+    }
 }
