@@ -40,7 +40,7 @@ public class Dyuque {
         new Dyuque().newChat();
     }
 
-    public Dyuque(){
+    public Dyuque() {
         this.scanner = new Scanner(System.in);
         this.taskList = new TaskList();
         this.shouldContinueExecution = true;
