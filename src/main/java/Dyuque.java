@@ -85,7 +85,7 @@ public class Dyuque {
                     ui.showGoodbye();
                     return false;
                 }
-                case LIST -> taskList.list();
+                case LIST -> ui.showMessage(taskList.list());
 
                 case TODO -> taskList.add(new Todo(arguments[0]));
                 case DEADLINE -> taskList.add(new Deadline(arguments[0], arguments[1]));

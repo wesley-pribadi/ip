@@ -14,12 +14,15 @@ public class TaskList {
         this.storage = storage;
     }
 
-    public void list() {
-        System.out.println("You have (" + size() + ") tasks:");
+    public String list() {
+        StringBuilder output = new StringBuilder();
+        output.append("You have (").append(size()).append(") tasks:\n");
+
         int i = 1;
         for (Task task : items) {
-            System.out.println((i++) + ". " + task);
+            output.append(i++).append(". ").append(task).append(System.lineSeparator());
         }
+        return output.toString();
     }
 
     public void add(Task task) throws DyuqueException {

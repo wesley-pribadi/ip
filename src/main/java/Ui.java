@@ -47,6 +47,10 @@ public class Ui {
         System.out.println("Goodbye, hope to see you again soon!");
     }
 
+    public void showMessage(String message) {
+        System.out.print(message);
+    }
+
     public void showError(String message) {
         System.out.print(ANSI_RED);
         System.out.println("[ERROR] " + message);
