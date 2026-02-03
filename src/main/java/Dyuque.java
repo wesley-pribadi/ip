@@ -92,8 +92,8 @@ public class Dyuque {
         System.out.println("  \"bye\" ---- quit Dyuque");
         System.out.println("Task types:");
         System.out.println("  todo ----- \"todo <description>\"");
-        System.out.println("  deadline - \"deadline <description> \\by <date>\"");
-        System.out.println("  event ---- \"event <description> \\from <date> \\to <date>\"");
+        System.out.println("  deadline - \"deadline <description> /by <YYYY-MM-DD>\"");
+        System.out.println("  event ---- \"event <description> /from <YYYY-MM-DD> /to <YYYY-MM-DD>\"");
         printLine();
         System.out.println("Enter a new task or command:");
     }
