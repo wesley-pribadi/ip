@@ -1,3 +1,5 @@
+package dyuque;
+
 import java.util.Optional;
 import java.util.Set;
 
@@ -41,7 +43,7 @@ public class Dyuque {
         this.storage = new Storage(SAVE_PATH);
         this.parser = new Parser();
         this.taskList = new TaskList(storage.load(), storage);
-        /* if file/folder missing: Storage creates them and loads empty list
+        /* if file/folder missing: dyuque.Storage creates them and loads empty list
            if reading fails: throw and exit (no overwrite risk) */
         this.shouldContinueExecution = true;
     }

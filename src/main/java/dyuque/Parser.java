@@ -1,3 +1,5 @@
+package dyuque;
+
 public class Parser {
     public CommandArgumentPair parseCommand(String input) throws DyuqueException {
         // Solution below inspired from multiple LLMs including ChatGPT, Claude, and Google AI

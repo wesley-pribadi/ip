@@ -1,3 +1,5 @@
+package dyuque;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -14,7 +16,7 @@ public class Event extends Task{
         this.toDate = parseIsoDate(toDate, "event /to");
 
         if (this.toDate.isBefore(this.fromDate)) {
-            throw new DyuqueException("Event end date cannot be before start date.");
+            throw new DyuqueException("dyuque.Event end date cannot be before start date.");
         }
     }
 

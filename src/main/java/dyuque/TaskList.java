@@ -1,3 +1,5 @@
+package dyuque;
+
 import java.util.ArrayList;
 
 public class TaskList {
@@ -87,7 +89,7 @@ public class TaskList {
         // arrayIndex is 0-based
 
         if (arrayIndex < 0 || (arrayIndex + 1) > size()) {
-            throw new DyuqueException("Task " + (arrayIndex + 1) + " does not exist.\nThere are only " + size() + " tasks");
+            throw new DyuqueException("dyuque.Task " + (arrayIndex + 1) + " does not exist.\nThere are only " + size() + " tasks");
         }
         return items.get(arrayIndex);
     }
