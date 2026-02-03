@@ -5,8 +5,8 @@ public class TaskList {
     private final Storage storage;
 
     protected enum markedState {
-        MARKED,
-        UNMARKED
+        Marked,
+        Unmarked
     }
 
     public TaskList(ArrayList<Task> initialItems, Storage storage) {
@@ -14,45 +14,69 @@ public class TaskList {
         this.storage = storage;
     }
 
-    public void list() {
-        System.out.println("You have (" + size() + ") tasks:");
+    public String list() {
+        StringBuilder output = new StringBuilder();
+        output.append("You have (").append(size()).append(") tasks:\n");
+
         int i = 1;
         for (Task task : items) {
-            System.out.println((i++) + ". " + task);
+            output.append(i++).append(". ").append(task).append(System.lineSeparator());
         }
+        return output.toString();
     }
 
-    public void add(Task task) throws DyuqueException {
+    public String add(Task task) throws DyuqueException {
         items.add(task);
-        System.out.println("Added:\n" + task.toString());
-        printSize();
         saveIfEnabled();
+
+        StringBuilder output = new StringBuilder();
+        output.append("Added:\n")
+                .append(task)
+                .append(System.lineSeparator())
+                .append("You now have (")
+                .append(size())
+                .append(") tasks.")
+                .append(System.lineSeparator());
+
+        return output.toString();
     }
 
-    public void delete(int arrayIndex) throws DyuqueException {
-        System.out.println("Removed:\n" + get(arrayIndex));
-        items.remove(get(arrayIndex));
-        printSize();
+    public String delete(int arrayIndex) throws DyuqueException {
+        Task removed = get(arrayIndex);  // validate once
+        items.remove(arrayIndex);
         saveIfEnabled();
+
+        StringBuilder output = new StringBuilder();
+        output.append("Removed:\n")
+                .append(removed)
+                .append(System.lineSeparator())
+                .append("You now have (")
+                .append(size())
+                .append(") tasks.")
+                .append(System.lineSeparator());
+
+        return output.toString();
     }
 
-    protected void setMarkedState(markedState state, int arrayIndex) throws DyuqueException {
+    protected String setMarkedState(markedState state, int arrayIndex) throws DyuqueException {
         // arrayIndex is 0-based
-
         Task task = get(arrayIndex);
 
-        switch (state) {
-            case MARKED:
+        String message = switch (state) {
+            case Marked -> {
                 task.markDone();
-                System.out.println("Nice! I've marked this task as done:");
-                break;
-            case UNMARKED:
+                yield "Nice! I've marked this task as done:";
+            }
+            case Unmarked -> {
                 task.markUndone();
-                System.out.println("OK, I've marked this task as not done yet:");
-                break;
-        }
-        System.out.println(task);
+                yield "OK, I've marked this task as not done yet:";
+            }
+        };
+
         saveIfEnabled();
+
+        return message + System.lineSeparator()
+                + task + System.lineSeparator();
     }
 
     public int size() {
@@ -66,10 +90,6 @@ public class TaskList {
             throw new DyuqueException("Task " + (arrayIndex + 1) + " does not exist.\nThere are only " + size() + " tasks");
         }
         return items.get(arrayIndex);
-    }
-
-    private void printSize() {
-        System.out.println("You now have (" + size() + ") tasks.");
     }
 
     private void saveIfEnabled() throws DyuqueException {
