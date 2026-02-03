@@ -26,7 +26,7 @@ public class Ui {
     }
 
     public void showWelcome() {
-        System.out.println("Hello! I'm dyuque.Dyuque");
+        System.out.println("Hello! I'm Dyuque");
         System.out.println("What can I do for you?");
         showLine();
         System.out.println("Commands:");
@@ -36,7 +36,7 @@ public class Ui {
         System.out.println("             mark <task number>");
         System.out.println("  \"unmark\" - unmark a task as done");
         System.out.println("             unmark <task number>");
-        System.out.println("  \"bye\" ---- quit dyuque.Dyuque");
+        System.out.println("  \"bye\" ---- quit Dyuque");
         System.out.println("dyuque.Task types:");
         System.out.println("  todo ----- \"todo <description>\"");
         System.out.println("  deadline - \"deadline <description> /by <YYYY-MM-DD>\"");
