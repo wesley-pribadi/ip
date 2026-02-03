@@ -91,8 +91,7 @@ public class Dyuque {
                 case DEADLINE -> ui.showMessage(taskList.add(new Deadline(arguments[0], arguments[1])));
                 case EVENT -> ui.showMessage(taskList.add(new Event(arguments[0], arguments[1], arguments[2])));
 
-
-                case DELETE -> taskList.delete(Integer.parseInt(arguments[0]) - 1);
+                case DELETE -> ui.showMessage(taskList.delete(Integer.parseInt(arguments[0]) - 1));
                 case MARK -> taskList.setMarkedState(TaskList.markedState.MARKED, Integer.parseInt(arguments[0]) - 1);
                 case UNMARK -> taskList.setMarkedState(TaskList.markedState.UNMARKED, Integer.parseInt(arguments[0]) - 1);
             }

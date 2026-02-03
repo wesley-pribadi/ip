@@ -41,11 +41,21 @@ public class TaskList {
         return output.toString();
     }
 
-    public void delete(int arrayIndex) throws DyuqueException {
-        System.out.println("Removed:\n" + get(arrayIndex));
-        items.remove(get(arrayIndex));
-        printSize();
+    public String delete(int arrayIndex) throws DyuqueException {
+        Task removed = get(arrayIndex);  // validate once
+        items.remove(arrayIndex);
         saveIfEnabled();
+
+        StringBuilder output = new StringBuilder();
+        output.append("Removed:\n")
+                .append(removed)
+                .append(System.lineSeparator())
+                .append("You now have (")
+                .append(size())
+                .append(") tasks.")
+                .append(System.lineSeparator());
+
+        return output.toString();
     }
 
     protected void setMarkedState(markedState state, int arrayIndex) throws DyuqueException {
