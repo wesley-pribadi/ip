@@ -17,22 +17,22 @@ public class Parser {
                 : "";
 
         return switch (command) {
-            case EXIT_CODE, LIST -> new CommandArgumentPair(command, new String[0]);
+            case Exit, List -> new CommandArgumentPair(command, new String[0]);
 
-            case MARK, UNMARK, DELETE -> {
+            case Mark, Unmark, Delete -> {
                 if (arguments.isBlank()) {
                     throw new DyuqueException("Usage: " + commandStr + " <index>");
                 }
                 yield new CommandArgumentPair(command, new String[]{ arguments });
             }
 
-            case TODO -> {
+            case Todo -> {
                 if (arguments.isBlank()) {
                     throw new DyuqueException("Usage: todo <description>");
                 }
                 yield new CommandArgumentPair(command, new String[]{ arguments });
             }
-            case EVENT -> {
+            case Event -> {
                 // Avoid regex split, this is less fragile
                 int fromPos = arguments.indexOf(" /from ");
                 int toPos = arguments.indexOf(" /to ");
@@ -48,7 +48,7 @@ public class Parser {
 
                 yield new CommandArgumentPair(command, new String[]{ desc, from, to });
             }
-            case DEADLINE -> {
+            case Deadline -> {
                 String[] parts = arguments.split(" /by ", 2);          /* Splits "return book /by Sunday"
                                                                        into ["return book", "Sunday"] */
                 if (parts.length != 2 || parts[0].isBlank() || parts[1].isBlank()) {

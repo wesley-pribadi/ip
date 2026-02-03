@@ -11,14 +11,14 @@ public class Dyuque {
     private boolean shouldContinueExecution;
 
     protected enum Command {
-        LIST("list", "ls"),
-        DELETE("delete", "remove"),
-        TODO("todo"),
-        DEADLINE("deadline"),
-        EVENT("event"),
-        MARK("mark"),
-        UNMARK("unmark"),
-        EXIT_CODE("bye", "exit");
+        List("list", "ls"),
+        Delete("delete", "remove"),
+        Todo("todo"),
+        Deadline("deadline"),
+        Event("event"),
+        Mark("mark"),
+        Unmark("unmark"),
+        Exit("bye", "exit");
 
         private final Set<String> keywords;
 
@@ -81,22 +81,22 @@ public class Dyuque {
          */
         try {
             switch (command) {
-                case EXIT_CODE -> {
+                case Exit -> {
                     ui.showGoodbye();
                     return false;
                 }
-                case LIST -> ui.showMessage(taskList.list());
+                case List -> ui.showMessage(taskList.list());
 
-                case TODO -> ui.showMessage(taskList.add(new Todo(arguments[0])));
-                case DEADLINE -> ui.showMessage(taskList.add(new Deadline(arguments[0], arguments[1])));
-                case EVENT -> ui.showMessage(taskList.add(new Event(arguments[0], arguments[1], arguments[2])));
+                case Todo -> ui.showMessage(taskList.add(new Todo(arguments[0])));
+                case Deadline -> ui.showMessage(taskList.add(new Deadline(arguments[0], arguments[1])));
+                case Event -> ui.showMessage(taskList.add(new Event(arguments[0], arguments[1], arguments[2])));
 
-                case DELETE -> ui.showMessage(taskList.delete(Integer.parseInt(arguments[0]) - 1));
+                case Delete -> ui.showMessage(taskList.delete(Integer.parseInt(arguments[0]) - 1));
 
-                case MARK ->
-                        ui.showMessage(taskList.setMarkedState(TaskList.markedState.MARKED, Integer.parseInt(arguments[0]) - 1));
-                case UNMARK ->
-                        ui.showMessage(taskList.setMarkedState(TaskList.markedState.UNMARKED, Integer.parseInt(arguments[0]) - 1));
+                case Mark ->
+                        ui.showMessage(taskList.setMarkedState(TaskList.markedState.Marked, Integer.parseInt(arguments[0]) - 1));
+                case Unmark ->
+                        ui.showMessage(taskList.setMarkedState(TaskList.markedState.Unmarked, Integer.parseInt(arguments[0]) - 1));
 
             }
         } catch (NumberFormatException nfe) {

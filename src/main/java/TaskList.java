@@ -5,8 +5,8 @@ public class TaskList {
     private final Storage storage;
 
     protected enum markedState {
-        MARKED,
-        UNMARKED
+        Marked,
+        Unmarked
     }
 
     public TaskList(ArrayList<Task> initialItems, Storage storage) {
@@ -63,11 +63,11 @@ public class TaskList {
         Task task = get(arrayIndex);
 
         String message = switch (state) {
-            case MARKED -> {
+            case Marked -> {
                 task.markDone();
                 yield "Nice! I've marked this task as done:";
             }
-            case UNMARKED -> {
+            case Unmarked -> {
                 task.markUndone();
                 yield "OK, I've marked this task as not done yet:";
             }
