@@ -25,11 +25,20 @@ public class TaskList {
         return output.toString();
     }
 
-    public void add(Task task) throws DyuqueException {
+    public String add(Task task) throws DyuqueException {
         items.add(task);
-        System.out.println("Added:\n" + task.toString());
-        printSize();
         saveIfEnabled();
+
+        StringBuilder output = new StringBuilder();
+        output.append("Added:\n")
+                .append(task)
+                .append(System.lineSeparator())
+                .append("You now have (")
+                .append(size())
+                .append(") tasks.")
+                .append(System.lineSeparator());
+
+        return output.toString();
     }
 
     public void delete(int arrayIndex) throws DyuqueException {

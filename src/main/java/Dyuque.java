@@ -87,9 +87,10 @@ public class Dyuque {
                 }
                 case LIST -> ui.showMessage(taskList.list());
 
-                case TODO -> taskList.add(new Todo(arguments[0]));
-                case DEADLINE -> taskList.add(new Deadline(arguments[0], arguments[1]));
-                case EVENT -> taskList.add(new Event(arguments[0], arguments[1], arguments[2]));
+                case TODO -> ui.showMessage(taskList.add(new Todo(arguments[0])));
+                case DEADLINE -> ui.showMessage(taskList.add(new Deadline(arguments[0], arguments[1])));
+                case EVENT -> ui.showMessage(taskList.add(new Event(arguments[0], arguments[1], arguments[2])));
+
 
                 case DELETE -> taskList.delete(Integer.parseInt(arguments[0]) - 1);
                 case MARK -> taskList.setMarkedState(TaskList.markedState.MARKED, Integer.parseInt(arguments[0]) - 1);
