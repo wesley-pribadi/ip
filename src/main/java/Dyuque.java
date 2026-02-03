@@ -8,7 +8,7 @@ public class Dyuque {
     private final Storage storage;
     private final Parser parser;
     private final TaskList taskList;
-    private Boolean shouldContinueExecution;
+    private boolean shouldContinueExecution;
 
     protected enum Command {
         LIST("list", "ls"),
@@ -68,7 +68,7 @@ public class Dyuque {
         } while (shouldContinueExecution);
     }
 
-    public Boolean executeCommand(String input) throws DyuqueException {
+    public boolean executeCommand(String input) throws DyuqueException {
         ui.showLine();
         CommandArgumentPair commandArgumentPair = parser.parseCommand(input);
         Command command = commandArgumentPair.command();
