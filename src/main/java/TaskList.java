@@ -58,23 +58,25 @@ public class TaskList {
         return output.toString();
     }
 
-    protected void setMarkedState(markedState state, int arrayIndex) throws DyuqueException {
+    protected String setMarkedState(markedState state, int arrayIndex) throws DyuqueException {
         // arrayIndex is 0-based
-
         Task task = get(arrayIndex);
 
-        switch (state) {
-            case MARKED:
+        String message = switch (state) {
+            case MARKED -> {
                 task.markDone();
-                System.out.println("Nice! I've marked this task as done:");
-                break;
-            case UNMARKED:
+                yield "Nice! I've marked this task as done:";
+            }
+            case UNMARKED -> {
                 task.markUndone();
-                System.out.println("OK, I've marked this task as not done yet:");
-                break;
-        }
-        System.out.println(task);
+                yield "OK, I've marked this task as not done yet:";
+            }
+        };
+
         saveIfEnabled();
+
+        return message + System.lineSeparator()
+                + task + System.lineSeparator();
     }
 
     public int size() {
