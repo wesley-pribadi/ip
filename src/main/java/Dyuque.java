@@ -1,13 +1,10 @@
 import java.util.Optional;
-import java.util.Scanner;
 import java.util.Set;
 
 public class Dyuque {
-    private static final String ANSI_RESET = "\u001B[0m";
-    private static final String ANSI_RED = "\u001B[31m";
     private static final String SAVE_PATH = "./data/dyuque.txt";
 
-    private final Scanner scanner;
+    private final Ui ui;
     private final Storage storage;
     private final Parser parser;
     private final TaskList taskList;
@@ -40,12 +37,12 @@ public class Dyuque {
     }
 
     public Dyuque() throws DyuqueException {
-        this.scanner = new Scanner(System.in);
+        this.ui = new Ui();
         this.storage = new Storage(SAVE_PATH);
         this.parser = new Parser();
         this.taskList = new TaskList(storage.load(), storage);
-        // if file/folder missing: Storage creates them and loads empty list
-        // if reading fails: throw and exit (no overwrite risk)
+        /* if file/folder missing: Storage creates them and loads empty list
+           if reading fails: throw and exit (no overwrite risk) */
         this.shouldContinueExecution = true;
     }
 
@@ -53,63 +50,26 @@ public class Dyuque {
         try {
             new Dyuque().newChat();
         } catch (DyuqueException e) {
-            System.out.print(ANSI_RED);
-            System.out.println("[FATAL] Failed to load saved tasks due to error:");
-            System.out.println("[FATAL] " + e.getMessage());
-            System.out.print(ANSI_RESET);
+            Ui ui = new Ui();
+            ui.showFatal("Failed to load saved tasks due to error:");
+            ui.showFatal(e.getMessage());
         }
     }
 
     public void newChat() {
-        printGreet();
-
+        ui.showWelcome();
         do {
-            System.out.print("> ");
+            ui.showPrompt();
             try {
-                shouldContinueExecution = executeCommand(scanInput());
+                shouldContinueExecution = executeCommand(ui.readLine());
             } catch (DyuqueException e) {
-                System.out.print(ANSI_RED);
-                System.out.println("[ERROR] " + e.getMessage());
-                System.out.print(ANSI_RESET);
+                ui.showError(e.getMessage());
             }
         } while (shouldContinueExecution);
     }
 
-    public void printLine() {
-        System.out.print("__________________________________________________");
-        System.out.println();
-    }
-
-    public void printGreet() {
-        System.out.println("Hello! I'm Dyuque");
-        System.out.println("What can I do for you?");
-        printLine();
-        System.out.println("Commands:");
-        System.out.println("  \"list\" --- list stored tasks");
-        System.out.println("  \"delete\" - delete a task");
-        System.out.println("  \"mark\" --- mark a task as done");
-        System.out.println("             mark <task number>");
-        System.out.println("  \"unmark\" - unmark a task as done");
-        System.out.println("             unmark <task number>");
-        System.out.println("  \"bye\" ---- quit Dyuque");
-        System.out.println("Task types:");
-        System.out.println("  todo ----- \"todo <description>\"");
-        System.out.println("  deadline - \"deadline <description> /by <YYYY-MM-DD>\"");
-        System.out.println("  event ---- \"event <description> /from <YYYY-MM-DD> /to <YYYY-MM-DD>\"");
-        printLine();
-        System.out.println("Enter a new task or command:");
-    }
-
-    public void printExit() {
-        System.out.println("Goodbye, hope to see you again soon!");
-    }
-
-    public String scanInput() {
-        return scanner.nextLine();
-    }
-
     public Boolean executeCommand(String input) throws DyuqueException {
-        printLine();
+        ui.showLine();
         CommandArgumentPair commandArgumentPair = parser.parseCommand(input);
         Command command = commandArgumentPair.command();
         String[] arguments = commandArgumentPair.argument();
@@ -122,7 +82,7 @@ public class Dyuque {
         try {
             switch (command) {
                 case EXIT_CODE -> {
-                    printExit();
+                    ui.showGoodbye();
                     return false;
                 }
                 case LIST -> taskList.list();
