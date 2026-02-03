@@ -52,7 +52,7 @@ public class Dyuque {
             new Dyuque().newChat();
         } catch (DyuqueException e) {
             System.out.print(ANSI_RED);
-            System.out.println("[FATAL] Failed to load saved tasks:");
+            System.out.println("[FATAL] Failed to load saved tasks due to error:");
             System.out.println("[FATAL] " + e.getMessage());
             System.out.print(ANSI_RESET);
         }
