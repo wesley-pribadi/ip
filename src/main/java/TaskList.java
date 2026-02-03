@@ -92,10 +92,6 @@ public class TaskList {
         return items.get(arrayIndex);
     }
 
-    private void printSize() {
-        System.out.println("You now have (" + size() + ") tasks.");
-    }
-
     private void saveIfEnabled() throws DyuqueException {
         if (storage != null) {
             storage.save(items);
