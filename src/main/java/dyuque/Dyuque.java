@@ -38,19 +38,35 @@ public class Dyuque {
         }
     }
 
-    public Dyuque() throws DyuqueException {
-        this.ui = new Ui();
-        this.storage = new Storage(SAVE_PATH);
-        this.parser = new Parser();
-        this.taskList = new TaskList(storage.load(), storage);
-        /* if file/folder missing: dyuque.Storage creates them and loads empty list
-           if reading fails: throw and exit (no overwrite risk) */
+    // Package-private constructor for tests
+    Dyuque(Ui ui, Storage storage, Parser parser, TaskList taskList) {
+        this.ui = ui;
+        this.storage = storage;
+        this.parser = parser;
+        this.taskList = taskList;
         this.shouldContinueExecution = true;
+    }
+
+    private static Dyuque initialiseDefaults() throws DyuqueException {
+        Ui ui = new Ui();
+        Storage storage = new Storage(SAVE_PATH);
+        Parser parser = new Parser();
+        TaskList taskList = new TaskList(storage.load(), storage);
+
+        return new Dyuque(ui, storage, parser, taskList);
+
+//        this.ui = new Ui();
+//        this.storage = new Storage(SAVE_PATH);
+//        this.parser = new Parser();
+//        this.taskList = new TaskList(storage.load(), storage);
+//        /* if file/folder missing: dyuque.Storage creates them and loads empty list
+//           if reading fails: throw and exit (no overwrite risk) */
+//        this.shouldContinueExecution = true;
     }
 
     public static void main(String[] args) {
         try {
-            new Dyuque().newChat();
+            Dyuque.initialiseDefaults().newChat();
         } catch (DyuqueException e) {
             Ui ui = new Ui();
             ui.showFatal("Failed to load saved tasks due to error:");
