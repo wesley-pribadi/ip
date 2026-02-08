@@ -3,15 +3,27 @@ package dyuque;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Runs the Dyuque chatbot application and coordinates command execution.
+ */
 public class Dyuque {
+    /** Default relative path used to store saved tasks. */
     private static final String SAVE_PATH = "./data/dyuque.txt";
 
+    /** UI component responsible for interacting with the user. */
     private final Ui ui;
+    /** Storage component responsible for loading and saving tasks. */
     private final Storage storage;
+    /** Parser component responsible for converting user input into commands. */
     private final Parser parser;
+    /** In-memory list of tasks managed by the chatbot. */
     private final TaskList taskList;
+    /** Whether the main chat loop should continue executing. */
     private boolean shouldContinueExecution;
 
+    /**
+     * Represents the supported commands and their accepted keywords.
+     */
     protected enum Command {
         List("list", "ls"),
         Delete("delete", "remove"),
@@ -22,12 +34,19 @@ public class Dyuque {
         Unmark("unmark"),
         Exit("bye", "exit");
 
+        /** Keywords that map to this command. */
         private final Set<String> keywords;
 
         Command(String... keywords) {
             this.keywords = Set.of(keywords);
         }
 
+        /**
+         * Returns the command matching the specified keyword, if any.
+         *
+         * @param keyword Keyword to resolve into a command.
+         * @return Matching command if the keyword is recognized.
+         */
         protected static Optional<Command> get(String keyword) {
             for (Command command : values()) {
                 if (command.keywords.contains(keyword)) {
@@ -38,7 +57,7 @@ public class Dyuque {
         }
     }
 
-    // Package-private constructor for tests
+    /** Package-private constructor for test classes */
     Dyuque(Ui ui, Storage storage, Parser parser, TaskList taskList) {
         this.ui = ui;
         this.storage = storage;
@@ -47,6 +66,12 @@ public class Dyuque {
         this.shouldContinueExecution = true;
     }
 
+    /**
+     * Creates a Dyuque instance configured with default UI, storage, parser, and task list.
+     *
+     * @return A fully initialized Dyuque instance.
+     * @throws DyuqueException If saved tasks cannot be loaded.
+     */
     private static Dyuque initialiseDefaults() throws DyuqueException {
         Ui ui = new Ui();
         Storage storage = new Storage(SAVE_PATH);
@@ -56,6 +81,11 @@ public class Dyuque {
         return new Dyuque(ui, storage, parser, taskList);
     }
 
+    /**
+     * Starts the chatbot application (entry point).
+     *
+     * @param args Command-line arguments.
+     */
     public static void main(String[] args) {
         try {
             Dyuque.initialiseDefaults().newChat();
@@ -66,6 +96,9 @@ public class Dyuque {
         }
     }
 
+    /**
+     * Starts a new interactive chat session and continues until an exit command is received.
+     */
     public void newChat() {
         ui.showWelcome();
         do {
@@ -78,6 +111,13 @@ public class Dyuque {
         } while (shouldContinueExecution);
     }
 
+    /**
+     * Executes the specified user input as a command and returns whether execution should continue.
+     *
+     * @param input Raw user input line.
+     * @return Whether the chat loop should continue after executing the command.
+     * @throws DyuqueException If the input cannot be parsed or the command fails to execute.
+     */
     public boolean executeCommand(String input) throws DyuqueException {
         ui.showLine();
         CommandArgumentPair commandArgumentPair = parser.parseCommand(input);

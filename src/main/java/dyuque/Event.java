@@ -4,12 +4,24 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/**
+ * Represents a task occurring over a date range.
+ */
 public class Event extends Task{
+    /** Date format used when displaying events to the user. */
     private static final DateTimeFormatter OUTPUT_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy");
 
     private final LocalDate fromDate;
     private final LocalDate toDate;
 
+    /**
+     * Creates an event task with the specified description and date range.
+     *
+     * @param description Description of the task.
+     * @param fromDate Start date in ISO-8601 format (YYYY-MM-DD).
+     * @param toDate End date in ISO-8601 format (YYYY-MM-DD).
+     * @throws DyuqueException If either date is not in ISO-8601 format or the end date is before the start date.
+     */
     public Event(String description, String fromDate, String toDate) throws DyuqueException {
         super(description);
         this.fromDate = parseIsoDate(fromDate, "event /from");
@@ -39,6 +51,9 @@ public class Event extends Task{
         }
     }
 
+    /**
+     * Returns the user-facing string representation of this event task.
+     */
     @Override
     public String toString() {
         return "[E]"
@@ -48,6 +63,9 @@ public class Event extends Task{
                 + " (to: " + toDate.format(OUTPUT_FORMAT) + ")";
     }
 
+    /**
+     * Returns the storage-formatted string representation of this event task.
+     */
     @Override
     public String toStorageString() {
         return "E | "
