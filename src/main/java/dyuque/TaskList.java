@@ -2,20 +2,39 @@ package dyuque;
 
 import java.util.ArrayList;
 
+/**
+ * Manages an in-memory list of tasks and persists changes when storage is enabled.
+ */
 public class TaskList {
+    /** Mutable list of tasks managed by this task list. */
     private final ArrayList<Task> items;
+    /** Storage used to persist task list changes. */
     private final Storage storage;
 
+    /**
+     * Represents the completion state to apply when marking or unmarking a task.
+     */
     protected enum markedState {
         Marked,
         Unmarked
     }
 
+    /**
+     * Creates a task list with the specified initial items and storage handler.
+     *
+     * @param initialItems Initial tasks to manage.
+     * @param storage Storage handler used to persist changes.
+     */
     public TaskList(ArrayList<Task> initialItems, Storage storage) {
         this.items = initialItems;
         this.storage = storage;
     }
 
+    /**
+     * Returns a formatted list of all tasks in this task list.
+     *
+     * @return User-facing list of tasks.
+     */
     public String list() {
         StringBuilder output = new StringBuilder();
         output.append("You have (").append(size()).append(") tasks:\n");
@@ -27,6 +46,13 @@ public class TaskList {
         return output.toString();
     }
 
+    /**
+     * Adds the specified task to this task list and returns a confirmation message.
+     *
+     * @param task Task to add.
+     * @return User-facing confirmation message.
+     * @throws DyuqueException If the task list cannot be saved.
+     */
     public String add(Task task) throws DyuqueException {
         items.add(task);
         saveIfEnabled();
@@ -43,6 +69,13 @@ public class TaskList {
         return output.toString();
     }
 
+    /**
+     * Deletes the task at the specified 0-based index and returns a confirmation message.
+     *
+     * @param arrayIndex 0-based index of the task to delete.
+     * @return User-facing confirmation message.
+     * @throws DyuqueException If the index is invalid or the task list cannot be saved.
+     */
     public String delete(int arrayIndex) throws DyuqueException {
         Task removed = get(arrayIndex);  // validate once
         items.remove(arrayIndex);
@@ -60,6 +93,14 @@ public class TaskList {
         return output.toString();
     }
 
+    /**
+     * Updates the marked state of the task at the specified 0-based index.
+     *
+     * @param state Marked state to apply.
+     * @param arrayIndex 0-based index of the task to update.
+     * @return User-facing confirmation message.
+     * @throws DyuqueException If the index is invalid or the task list cannot be saved.
+     */
     protected String setMarkedState(markedState state, int arrayIndex) throws DyuqueException {
         // arrayIndex is 0-based
         Task task = get(arrayIndex);
@@ -81,7 +122,7 @@ public class TaskList {
                 + task + System.lineSeparator();
     }
 
-    public int size() {
+    private int size() {
         return items.size();
     }
 

@@ -1,8 +1,18 @@
 package dyuque;
 
+/**
+ * Parses user input strings into commands and structured arguments.
+ */
 public class Parser {
+    /**
+     * Returns a command-argument pair parsed from the specified user input.
+     *
+     * @param input Raw user input line.
+     * @return Parsed command and associated arguments.
+     * @throws DyuqueException If the input is blank, the command is unknown, or the command usage is invalid.
+     */
     public CommandArgumentPair parseCommand(String input) throws DyuqueException {
-        // Solution below inspired from multiple LLMs including ChatGPT, Claude, and Google AI
+        // Method inspired from multiple LLMs including ChatGPT, Claude, and Google AI
 
         if (input.isBlank()) {
             throw new DyuqueException("Please enter a command");

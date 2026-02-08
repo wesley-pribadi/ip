@@ -10,14 +10,29 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Loads tasks from disk and saves task updates to disk.
+ */
 public class Storage {
     // Consulted ChatGPT when writing this class
+
+    /** Path to the save file used for persistent storage. */
     private final Path filePath;
 
+    /**
+     * Creates a storage handler using the specified relative file path.
+     *
+     * @param relativePath Relative path to the save file.
+     */
     public Storage(String relativePath) {
         this.filePath = Paths.get(relativePath);
     }
 
+    /**
+     * Ensures the save file and its parent directories exist.
+     *
+     * @throws DyuqueException If the save directory or file cannot be created.
+     */
     public void ensureStorageExists() throws DyuqueException {
         try {
             Path parent = filePath.getParent();
@@ -32,6 +47,12 @@ public class Storage {
         }
     }
 
+    /**
+     * Returns the list of tasks loaded from the save file.
+     *
+     * @return Tasks loaded from storage.
+     * @throws DyuqueException If the save file cannot be created or read, or if any stored line is invalid.
+     */
     public ArrayList<Task> load() throws DyuqueException {
         ensureStorageExists();
 
@@ -51,6 +72,12 @@ public class Storage {
         return tasks;
     }
 
+    /**
+     * Saves the specified tasks to the save file.
+     *
+     * @param tasks Tasks to save.
+     * @throws DyuqueException If the save file cannot be created or written.
+     */
     public void save(List<Task> tasks) throws DyuqueException {
         ensureStorageExists();
 
