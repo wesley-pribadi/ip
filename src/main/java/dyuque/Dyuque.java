@@ -26,10 +26,11 @@ public class Dyuque {
      */
     protected enum Command {
         List("list", "ls"),
-        Delete("delete", "remove"),
+        Find("find"),
         Todo("todo"),
         Deadline("deadline"),
         Event("event"),
+        Delete("delete", "remove"),
         Mark("mark"),
         Unmark("unmark"),
         Exit("bye", "exit");
@@ -136,6 +137,7 @@ public class Dyuque {
                     return false;
                 }
                 case List -> ui.showMessage(taskList.list());
+                case Find -> ui.showMessage(taskList.find(arguments[0]));
 
                 case Todo -> ui.showMessage(taskList.add(new Todo(arguments[0])));
                 case Deadline -> ui.showMessage(taskList.add(new Deadline(arguments[0], arguments[1])));

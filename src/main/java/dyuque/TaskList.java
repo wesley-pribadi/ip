@@ -41,9 +41,39 @@ public class TaskList {
 
         int i = 1;
         for (Task task : items) {
-            output.append(i++).append(". ").append(task).append(System.lineSeparator());
+            output.append(i++)
+                    .append(". ")
+                    .append(task)
+                    .append(System.lineSeparator());
         }
         return output.toString();
+    }
+
+    /**
+     * Returns a formatted list of tasks whose descriptions contain the specified keyword.
+     *
+     * @param keyword Keyword to search for within task descriptions.
+     * @return User-facing list of matching tasks.
+     * @throws DyuqueException If the keyword is blank.
+     */
+    public String find(String keyword) throws DyuqueException {
+        String needle = keyword.trim().toLowerCase();
+        StringBuilder output = new StringBuilder();
+        int matchCount = 0;
+
+        for (Task task : items) {
+            String haystack = task.getDescription().toLowerCase();
+            if (haystack.contains(needle)) {
+                matchCount++;
+                output.append(matchCount)
+                        .append(". ")
+                        .append(task)
+                        .append(System.lineSeparator());
+            }
+        }
+
+        return "You have (" + matchCount + ") matching tasks:\n"
+                + output.toString();
     }
 
     /**
