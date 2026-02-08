@@ -31,6 +31,13 @@ public class Parser {
         return switch (command) {
             case Exit, List -> new CommandArgumentPair(command, new String[0]);
 
+            case Find -> {
+                if (arguments.isBlank()) {
+                    throw new DyuqueException("Usage: find <keyword>");
+                }
+                yield new CommandArgumentPair(command, new String[]{ arguments });
+            }
+
             case Mark, Unmark, Delete -> {
                 if (arguments.isBlank()) {
                     throw new DyuqueException("Usage: " + commandStr + " <index>");

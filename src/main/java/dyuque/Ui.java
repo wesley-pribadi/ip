@@ -52,7 +52,9 @@ public class Ui {
         System.out.println("What can I do for you?");
         showLine();
         System.out.println("Commands:");
-        System.out.println("  \"list\" --- list stored tasks");
+        System.out.println("  \"list\" --- list tasks");
+        System.out.println("  \"find\" --- find tasks by description");
+        System.out.println("             find <keyword>");
         System.out.println("  \"delete\" - delete a task");
         System.out.println("  \"mark\" --- mark a task as done");
         System.out.println("             mark <task number>");
