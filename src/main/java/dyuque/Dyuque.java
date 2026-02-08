@@ -144,9 +144,13 @@ public class Dyuque {
                 case Delete -> ui.showMessage(taskList.delete(Integer.parseInt(arguments[0]) - 1));
 
                 case Mark ->
-                        ui.showMessage(taskList.setMarkedState(TaskList.markedState.Marked, Integer.parseInt(arguments[0]) - 1));
+                        ui.showMessage(taskList.setMarkedState(
+                                TaskList.markedState.Marked,
+                                Integer.parseInt(arguments[0]) - 1));
                 case Unmark ->
-                        ui.showMessage(taskList.setMarkedState(TaskList.markedState.Unmarked, Integer.parseInt(arguments[0]) - 1));
+                        ui.showMessage(taskList.setMarkedState(
+                                TaskList.markedState.Unmarked,
+                                Integer.parseInt(arguments[0]) - 1));
 
             }
         } catch (NumberFormatException nfe) {
