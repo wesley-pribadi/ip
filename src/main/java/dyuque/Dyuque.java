@@ -54,14 +54,6 @@ public class Dyuque {
         TaskList taskList = new TaskList(storage.load(), storage);
 
         return new Dyuque(ui, storage, parser, taskList);
-
-//        this.ui = new Ui();
-//        this.storage = new Storage(SAVE_PATH);
-//        this.parser = new Parser();
-//        this.taskList = new TaskList(storage.load(), storage);
-//        /* if file/folder missing: dyuque.Storage creates them and loads empty list
-//           if reading fails: throw and exit (no overwrite risk) */
-//        this.shouldContinueExecution = true;
     }
 
     public static void main(String[] args) {
