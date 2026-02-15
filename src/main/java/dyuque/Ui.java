@@ -39,41 +39,46 @@ public class Ui {
     /**
      * Prints a horizontal separator line.
      */
-    public void showLine() {
-        System.out.print("__________________________________________________");
-        System.out.println();
+    public String showLine() {
+        String output = "__________________________________________________\n";
+        System.out.print(output);
+        return output;
     }
 
     /**
      * Prints the welcome message and basic usage instructions.
      */
-    public void showWelcome() {
-        System.out.println("Hello! I'm Dyuque");
-        System.out.println("What can I do for you?");
-        showLine();
-        System.out.println("Commands:");
-        System.out.println("  \"list\" --- list tasks");
-        System.out.println("  \"find\" --- find tasks by description");
-        System.out.println("             find <keyword>");
-        System.out.println("  \"delete\" - delete a task");
-        System.out.println("  \"mark\" --- mark a task as done");
-        System.out.println("             mark <task number>");
-        System.out.println("  \"unmark\" - unmark a task as done");
-        System.out.println("             unmark <task number>");
-        System.out.println("  \"bye\" ---- quit Dyuque");
-        System.out.println("dyuque.Task types:");
-        System.out.println("  todo ----- \"todo <description>\"");
-        System.out.println("  deadline - \"deadline <description> /by <YYYY-MM-DD>\"");
-        System.out.println("  event ---- \"event <description> /from <YYYY-MM-DD> /to <YYYY-MM-DD>\"");
-        showLine();
-        System.out.println("Enter a new task or command:");
+    public String showWelcome() {
+        String output = "Hello! I'm Dyuque\n"
+                + "What can I do for you?\n"
+                + "\n"
+                + "Commands:\n"
+                + "  \"list\" --- list tasks\n"
+                + "  \"find\" --- find tasks by description\n"
+                + "             find <keyword>\n"
+                + "  \"delete\" - delete a task\n"
+                + "  \"mark\" --- mark a task as done\n"
+                + "             mark <task number>\n"
+                + "  \"unmark\" - unmark a task as done\n"
+                + "             unmark <task number>\n"
+                + "  \"bye\" ---- quit Dyuque\n"
+                + "Task types:\n"
+                + "  todo ----- \"todo <description>\"\n"
+                + "  deadline - \"deadline <description> /by <YYYY-MM-DD>\"\n"
+                + "  event ---- \"event <description> /from <YYYY-MM-DD> /to <YYYY-MM-D\"\n"
+                + "\n"
+                + "Enter a new task or command:\n";
+
+        System.out.println(output);
+        return output;
     }
 
     /**
      * Prints the goodbye message.
      */
-    public void showGoodbye() {
+    public String showGoodbye() {
         System.out.println("Goodbye, hope to see you again soon!");
+        return "Goodbye, hope to see you again soon!";
     }
 
     /**
@@ -81,8 +86,9 @@ public class Ui {
      *
      * @param message Message to print.
      */
-    public void showMessage(String message) {
+    public String showMessage(String message) {
         System.out.print(message);
+        return message;
     }
 
     /**
