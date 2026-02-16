@@ -28,16 +28,8 @@ public class Event extends Task{
         this.toDate = parseIsoDate(toDate, "event /to");
 
         if (this.toDate.isBefore(this.fromDate)) {
-            throw new DyuqueException("dyuque.Event end date cannot be before start date.");
+            throw new DyuqueException("End date cannot be before start date.");
         }
-    }
-
-    public LocalDate getFromDate() {
-        return fromDate;
-    }
-
-    public LocalDate getToDate() {
-        return toDate;
     }
 
     private static LocalDate parseIsoDate(String dueDateStr, String field) throws DyuqueException {

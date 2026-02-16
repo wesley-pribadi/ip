@@ -35,7 +35,7 @@ public class ParserTest {
         Parser parser = new Parser();
 
         CommandArgumentPair pair = parser.parseCommand("   todo   read book   ");
-        assertEquals(Dyuque.Command.Todo, pair.command());
+        assertEquals(Dyuque.Command.TODO, pair.command());
         assertArrayEquals(new String[]{"read book"}, pair.argument());
     }
 
@@ -44,7 +44,7 @@ public class ParserTest {
         Parser parser = new Parser();
 
         CommandArgumentPair pair = parser.parseCommand("deadline return book /by Sunday");
-        assertEquals(Dyuque.Command.Deadline, pair.command());
+        assertEquals(Dyuque.Command.DEADLINE, pair.command());
         assertArrayEquals(new String[]{"return book", "Sunday"}, pair.argument());
     }
 
@@ -66,7 +66,7 @@ public class ParserTest {
         Parser parser = new Parser();
 
         CommandArgumentPair pair = parser.parseCommand("event proj meeting /from Mon /to Tue");
-        assertEquals(Dyuque.Command.Event, pair.command());
+        assertEquals(Dyuque.Command.EVENT, pair.command());
         assertArrayEquals(new String[]{"proj meeting", "Mon", "Tue"}, pair.argument());
     }
 
