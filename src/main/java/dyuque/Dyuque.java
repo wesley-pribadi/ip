@@ -48,7 +48,7 @@ public class Dyuque {
          * @param keyword Keyword to resolve into a command.
          * @return Matching command if the keyword is recognized.
          */
-        protected static Optional<Command> get(String keyword) {
+        protected static Optional<Command> getCommand(String keyword) {
             for (Command command : values()) {
                 if (command.keywords.contains(keyword)) {
                     return Optional.of((command));
@@ -123,15 +123,21 @@ public class Dyuque {
      */
     public String executeCommand(String input) throws DyuqueException {
         ui.showLine();
-        CommandArgumentPair commandArgumentPair = parser.parseCommand(input);
-        Command command = commandArgumentPair.command();
-        String[] arguments = commandArgumentPair.argument();
+
+        CommandArgumentPair pair = parser.parseCommand(input);
+
+        Command command = pair.command();
+        assert command != null : "Parser returned null command";
+
+        String[] arguments = pair.argument();
+        assert arguments != null : "Parser returned null arguments";
         /*  Elements of arguments:
                 delete/mark/unmark: index
                 to-do:              description
                 deadline:           description, dueDate
                 event:              description, fromDate, toDate
          */
+
         try {
             return switch (command) {
                 case Exit -> {

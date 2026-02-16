@@ -18,11 +18,13 @@ public class Parser {
             throw new DyuqueException("Please enter a command");
         }
 
-        String[] commandAndArguments = input.trim().split(" ", 2); /* Splits "deadline return book /by Sunday"
-                                                               into ["deadline", "return book /by Sunday"] */
+        // Splits "deadline return book /by Sunday" into ["deadline", "return book /by Sunday"]
+        String[] commandAndArguments = input.trim().split(" ", 2);
+        assert commandAndArguments.length >= 1 : "Split should always produce at least one element";
+
         String commandStr = commandAndArguments[0];
         Dyuque.Command command = Dyuque.Command
-                .get(commandStr)
+                .getCommand(commandStr)
                 .orElseThrow(() -> new DyuqueException("Unknown command: " + commandStr));
         String arguments = (commandAndArguments.length == 2)
                 ? commandAndArguments[1].trim()
