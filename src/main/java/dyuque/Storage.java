@@ -126,9 +126,9 @@ public class Storage {
 
         // set task doneState
         if ("1".equals(doneState)) {
-            task.markDone();
+            task.setState(Task.State.MARKED);
         } else if ("0".equals(doneState)) {
-            task.markUndone();
+            task.setState(Task.State.UNMARKED);
         } else {
             throw new DyuqueException("Invalid done flag in line:\n  " + line);
         }

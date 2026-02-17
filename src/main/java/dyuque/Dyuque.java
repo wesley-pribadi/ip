@@ -1,5 +1,7 @@
 package dyuque;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -19,6 +21,8 @@ public class Dyuque {
     private final Parser parser;
     /** In-memory list of tasks managed by the chatbot. */
     private final TaskList taskList;
+    /** Stack of UndoActions to support undo command */
+    private final Deque<UndoAction> undoStack = new ArrayDeque<>();
     /** Whether the main chat loop should continue executing. */
     private boolean shouldContinueExecution;
 
@@ -43,7 +47,9 @@ public class Dyuque {
         UNMARK("unmark <index>",
                 "unmark"),
         EXIT("exit",
-                "bye", "exit");
+                "bye", "exit"),
+        UNDO("undo",
+                "undo");
 
         /** User-facing help string to use the command. */
         private final String usageHelpStr;
@@ -79,6 +85,11 @@ public class Dyuque {
             }
             return Optional.empty();
         }
+    }
+
+    @FunctionalInterface
+    private interface UndoAction {
+        String undo() throws DyuqueException;
     }
 
     /** Package-private constructor for test classes */
@@ -174,12 +185,17 @@ public class Dyuque {
             case EXIT -> handleExit();
             case LIST -> handleList();
             case FIND -> handleFind(arguments[0]);
+
             case TODO -> handleAddTask(new Todo(arguments[0]));
             case DEADLINE -> handleAddTask(new Deadline(arguments[0], arguments[1]));
             case EVENT -> handleAddTask(new Event(arguments[0], arguments[1], arguments[2]));
+
             case DELETE -> handleDeleteTask(arguments[0]);
+
             case MARK -> handleMarkTask(arguments[0]);
             case UNMARK -> handleUnmarkTask(arguments[0]);
+
+            case UNDO -> handleUndo();
         };
     }
 
@@ -200,25 +216,55 @@ public class Dyuque {
 
     private String handleAddTask(Task task) throws DyuqueException {
         Task addedTask = taskList.add(task);
+        int addedIndex = taskList.size() - 1;
+
+        undoStack.push(() -> {
+            Task deletedTask = taskList.delete(addedIndex);
+            return ui.formatTaskDeleted(deletedTask, taskList.size());
+        });
+
         return ui.formatTaskAdded(addedTask, taskList.size());
     }
 
     private String handleDeleteTask(String indexStr) throws DyuqueException {
         int index = parseTaskIndex(indexStr);
         Task deletedTask = taskList.delete(index);
+
+        undoStack.push(() -> {
+            taskList.add(index, deletedTask);
+            return ui.formatTaskAdded(deletedTask, taskList.size());
+        });
+
         return ui.formatTaskDeleted(deletedTask, taskList.size());
     }
 
     private String handleMarkTask(String indexStr) throws DyuqueException {
-        int index = parseTaskIndex(indexStr);
-        Task markedTask = taskList.setMarkedState(TaskList.MarkedState.MARKED, index);
-        return ui.formatTaskMarked(markedTask);
+        return processStateChange(indexStr, Task.State.MARKED);
     }
 
     private String handleUnmarkTask(String indexStr) throws DyuqueException {
+        return processStateChange(indexStr, Task.State.UNMARKED);
+    }
+
+    private String processStateChange(String indexStr, Task.State newState) throws DyuqueException {
         int index = parseTaskIndex(indexStr);
-        Task unmarkedTask = taskList.setMarkedState(TaskList.MarkedState.UNMARKED, index);
-        return ui.formatTaskUnmarked(unmarkedTask);
+        Task.State previousTaskState = taskList.getTaskState(index);
+
+        Task updatedTask = taskList.setMarkedState(newState, index);
+
+        undoStack.push(() -> {
+            Task restoredTask = taskList.setMarkedState(previousTaskState, index);
+            return ui.formatTaskChangedState(restoredTask, previousTaskState);
+        });
+
+        return ui.formatTaskChangedState(updatedTask, newState);
+    }
+
+    private String handleUndo() throws DyuqueException {
+        if (undoStack.isEmpty()) {
+            return ui.showError("Nothing to undo.");
+        }
+        return undoStack.pop().undo();
     }
 
     private int parseTaskIndex(String indexStr) throws DyuqueException {
@@ -233,7 +279,7 @@ public class Dyuque {
         return ui.showWelcome();
     }
 
-    Boolean getShouldContinueExecution() {
+    boolean getShouldContinueExecution() {
         return shouldContinueExecution;
     }
 }

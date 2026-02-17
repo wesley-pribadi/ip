@@ -20,7 +20,7 @@ public class Todo extends Task {
     @Override
     public String toString() {
         return "[T]"
-                + (isDone ? "[X] " : "[ ] ")
+                + (state.equals(State.MARKED) ? "[X] " : "[ ] ")
                 + description;
     }
 

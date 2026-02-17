@@ -4,6 +4,8 @@ package dyuque;
  * Parses user input strings into commands and structured arguments.
  */
 public class Parser {
+    // Class inspired from multiple LLMs including ChatGPT, Claude, and Google AI
+
     /**
      * Returns a command-argument pair parsed from the specified user input.
      *
@@ -12,7 +14,6 @@ public class Parser {
      * @throws DyuqueException If the input is blank, the command is unknown, or the command usage is invalid.
      */
     public CommandArgumentPair parseCommand(String input) throws DyuqueException {
-        // Method inspired from multiple LLMs including ChatGPT, Claude, and Google AI
         validateNotBlank(input);
 
         // Splits "deadline return book /by Sunday" into ["deadline", "return book /by Sunday"]
@@ -45,7 +46,7 @@ public class Parser {
 
     private CommandArgumentPair parseCommandArguments(Dyuque.Command command, String arguments) throws DyuqueException {
         return switch (command) {
-            case EXIT, LIST -> new CommandArgumentPair(command, new String[0]);
+            case EXIT, LIST, UNDO -> new CommandArgumentPair(command, new String[0]);
             case DELETE, MARK, UNMARK, FIND, TODO -> parseSingleArgCommand(command, arguments);
             case EVENT -> parseEventCommand(command, arguments);
             case DEADLINE -> parseDeadlineCommand(command, arguments);
