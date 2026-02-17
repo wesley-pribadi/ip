@@ -54,9 +54,8 @@ public class TaskList {
      *
      * @param keyword Keyword to search for within task descriptions.
      * @return User-facing list of matching tasks.
-     * @throws DyuqueException If the keyword is blank.
      */
-    public String find(String keyword) throws DyuqueException {
+    public String find(String keyword) {
         String needle = keyword.trim().toLowerCase();
         StringBuilder output = new StringBuilder();
         int matchCount = 0;
@@ -84,7 +83,10 @@ public class TaskList {
      * @throws DyuqueException If the task list cannot be saved.
      */
     public String add(Task task) throws DyuqueException {
+        int previousSize = size();
         items.add(task);
+        assert size() == previousSize + 1 : "Task list size should increase after adding";
+
         saveIfEnabled();
 
         StringBuilder output = new StringBuilder();
@@ -95,7 +97,6 @@ public class TaskList {
                 .append(size())
                 .append(") tasks.")
                 .append(System.lineSeparator());
-
         return output.toString();
     }
 
@@ -107,8 +108,12 @@ public class TaskList {
      * @throws DyuqueException If the index is invalid or the task list cannot be saved.
      */
     public String delete(int arrayIndex) throws DyuqueException {
-        Task removed = get(arrayIndex);  // validate once
+        Task removed = getTask(arrayIndex);
+
+        int previousSize = size();
         items.remove(arrayIndex);
+        assert previousSize == size() - 1 : "Task list size should decrease after deleting";
+
         saveIfEnabled();
 
         StringBuilder output = new StringBuilder();
@@ -119,7 +124,6 @@ public class TaskList {
                 .append(size())
                 .append(") tasks.")
                 .append(System.lineSeparator());
-
         return output.toString();
     }
 
@@ -132,8 +136,7 @@ public class TaskList {
      * @throws DyuqueException If the index is invalid or the task list cannot be saved.
      */
     protected String setMarkedState(markedState state, int arrayIndex) throws DyuqueException {
-        // arrayIndex is 0-based
-        Task task = get(arrayIndex);
+        Task task = getTask(arrayIndex);
 
         String message = switch (state) {
             case Marked -> {
@@ -152,16 +155,8 @@ public class TaskList {
                 + task + System.lineSeparator();
     }
 
-    private int size() {
-        return items.size();
-    }
-
-    private Task get(int arrayIndex) throws DyuqueException {
-        // arrayIndex is 0-based
-
-        if (arrayIndex < 0 || (arrayIndex + 1) > size()) {
-            throw new DyuqueException("dyuque.Task " + (arrayIndex + 1) + " does not exist.\nThere are only " + size() + " tasks");
-        }
+    private Task getTask(int arrayIndex) throws DyuqueException {
+        validateIndexBounds(arrayIndex);
         return items.get(arrayIndex);
     }
 
@@ -169,5 +164,16 @@ public class TaskList {
         if (storage != null) {
             storage.save(items);
         }
+    }
+
+    private void validateIndexBounds(int arrayIndex) throws DyuqueException {
+        // arrayIndex is 0-based
+        if (arrayIndex < 0 || arrayIndex >= size()) {
+            throw new DyuqueException("dyuque.Task " + (arrayIndex + 1) + " does not exist.\nThere are only " + size() + " tasks");
+        }
+    }
+
+    private int size() {
+        return items.size();
     }
 }
