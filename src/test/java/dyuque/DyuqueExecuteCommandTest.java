@@ -5,36 +5,24 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-
 public class DyuqueExecuteCommandTest {
-    // ChatGPT was used to write this test
 
     static class FakeUi extends Ui {
-        String lastMessage = null;
-        String lastError = null;
         boolean goodbyeShown = false;
         int lineCount = 0;
-
-        public void showMessage(String message) {
-            lastMessage = message;
-        }
-
-        @Override
-        public String showError(String message) {
-            lastError = message;
-            return message;
-        }
 
         @Override
         public String showGoodbye() {
             goodbyeShown = true;
-            return null;
+            return "goodbye";
         }
 
         @Override
@@ -44,26 +32,40 @@ public class DyuqueExecuteCommandTest {
     }
 
     @Test
-    public void executeCommand_exit_returnsFalseAndShowsGoodbye(@TempDir Path tempDir) throws Exception {
+    public void executeCommand_exit_showsGoodbyeAndReturnsMessage(@TempDir Path tempDir) throws Exception {
         FakeUi ui = new FakeUi();
         Storage storage = new Storage(tempDir.resolve("dyuque.txt").toString());
         Parser parser = new Parser();
         TaskList taskList = new TaskList(storage.load(), storage);
-
         Dyuque dyuque = new Dyuque(ui, storage, parser, taskList);
 
-        boolean shouldContinue = dyuque.executeCommand("bye");
+        CommandArgumentPair pair = parser.parseCommand("bye");
+        String output = dyuque.executeCommand(pair);
 
-        assertFalse(shouldContinue);
         assertTrue(ui.goodbyeShown);
-        assertEquals(1, ui.lineCount);
-    }
-
-    private void assertFalse(boolean shouldContinue) {
+        assertNotNull(output);
+        assertFalse(output.isBlank());
     }
 
     @Test
-    public void executeCommand_todo_addsTaskAndReturnsTrue(@TempDir Path tempDir) throws Exception {
+    public void executeCommand_todo_addsTaskAndReturnsMessage(@TempDir Path tempDir) throws Exception {
+        FakeUi ui = new FakeUi();
+        Storage storage = new Storage(tempDir.resolve("dyuque.txt").toString());
+        Parser parser = new Parser();
+        TaskList taskList = new TaskList(storage.load(), storage);
+        Dyuque dyuque = new Dyuque(ui, storage, parser, taskList);
+
+        CommandArgumentPair pair = parser.parseCommand("todo read book");
+        String output = dyuque.executeCommand(pair);
+
+        assertNotNull(output);
+        assertTrue(output.contains("read book"));
+
+        assertEquals(1, taskList.size());
+    }
+
+    @Test
+    public void executeCommand_mark_nonInteger_throwsDyuqueExceptionWithNumberFormatCause(@TempDir Path tempDir) throws Exception {
         FakeUi ui = new FakeUi();
         Storage storage = new Storage(tempDir.resolve("dyuque.txt").toString());
         Parser parser = new Parser();
@@ -71,24 +73,20 @@ public class DyuqueExecuteCommandTest {
 
         Dyuque dyuque = new Dyuque(ui, storage, parser, taskList);
 
-        boolean shouldContinue = dyuque.executeCommand("todo read book");
+        CommandArgumentPair pair = parser.parseCommand("mark abc");
 
-        assertTrue(shouldContinue);
-        assertNotNull(ui.lastMessage);
-        // Not depending on exact formatting here but message should contain the description.
-        assertTrue(ui.lastMessage.contains("read book"));
-    }
-
-    @Test
-    public void executeCommand_mark_nonInteger_throwsDyuqueException(@TempDir Path tempDir) throws Exception {
-        FakeUi ui = new FakeUi();
-        Storage storage = new Storage(tempDir.resolve("dyuque.txt").toString());
-        Parser parser = new Parser();
-        TaskList taskList = new TaskList(storage.load(), storage);
-
-        Dyuque dyuque = new Dyuque(ui, storage, parser, taskList);
-
-        DyuqueException ex = assertThrows(DyuqueException.class, () -> dyuque.executeCommand("mark abc"));
+        DyuqueException ex = assertThrows(DyuqueException.class, () -> dyuque.executeCommand(pair));
         assertInstanceOf(NumberFormatException.class, ex.getCause());
+        assertTrue(ex.getMessage().contains("Expected integer"));
+    }
+
+    @Test
+    public void parseCommand_mark_nonInteger_stillParses() throws Exception {
+        Parser parser = new Parser();
+
+        CommandArgumentPair pair = parser.parseCommand("mark abc");
+        assertNotNull(pair);
+        assertEquals(Dyuque.Command.MARK, pair.command());
+        assertArrayEquals(new String[]{"abc"}, pair.argument());
     }
 }
