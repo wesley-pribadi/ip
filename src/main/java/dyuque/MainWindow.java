@@ -61,9 +61,9 @@ public class MainWindow extends AnchorPane {
         try {
             String response = dyuque.getResponse(input);
 
-            dialogContainer.getChildren().add(
-                    DialogBox.getDyuqueDialog(response, dukeImage)
-            );
+            dialogContainer
+                    .getChildren()
+                    .add(DialogBox.getDyuqueDialog(response, dukeImage));
 
             if (!dyuque.getShouldContinueExecution()) {
                 userInput.setDisable(true);
@@ -74,11 +74,10 @@ public class MainWindow extends AnchorPane {
                 delay.play();
                 Platform.exit();
             }
-
         } catch (DyuqueException e) {
-            dialogContainer.getChildren().add(
-                    DialogBox.getDyuqueDialog("Error: " + e.getMessage(), dukeImage)
-            );
+            dialogContainer
+                    .getChildren()
+                    .add(DialogBox.getDyuqueDialog(Ui.showError(e.getMessage()), dukeImage));
         }
 
         userInput.clear();

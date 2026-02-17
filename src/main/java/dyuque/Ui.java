@@ -175,7 +175,7 @@ public class Ui {
      *
      * @param message Error message to print.
      */
-    public String showError(String message) {
+    public static String showError(String message) {
         String output = "[ERROR] " + message;
         System.out.print(ANSI_RED);
         System.out.println(output);
