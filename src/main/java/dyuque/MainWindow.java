@@ -12,6 +12,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.util.Objects;
+
 /**
  * Controller for the main GUI.
  */
@@ -27,13 +29,10 @@ public class MainWindow extends AnchorPane {
 
     private Dyuque dyuque;
 
-    private Image userImage = new Image(this.getClass().getResourceAsStream("/images/DaUser.png"));
-    private Image dukeImage = new Image(this.getClass().getResourceAsStream("/images/DaDuke.png"));
-
-    @FXML
-    public void initialize() {
-        scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
-    }
+    private final Image userImage = new Image(Objects.requireNonNull(
+            this.getClass().getResourceAsStream("/images/DaUser.png")));
+    private final Image dukeImage = new Image(Objects.requireNonNull(
+            this.getClass().getResourceAsStream("/images/DaDuke.png")));
 
     /** Injects the Dyuque instance */
     public void setDyuque(Dyuque dyuque) {
@@ -60,7 +59,7 @@ public class MainWindow extends AnchorPane {
         );
 
         try {
-            String response = dyuque.executeCommand(input);
+            String response = dyuque.getResponse(input);
 
             dialogContainer.getChildren().add(
                     DialogBox.getDyuqueDialog(response, dukeImage)
@@ -83,6 +82,11 @@ public class MainWindow extends AnchorPane {
         }
 
         userInput.clear();
+
+        // @@author wesley-pribadi-reused
+        // Autoscroll downward after the new messages have been added
+        // See https://github.com/NUS-CS2103-AY2526-S2/forum/issues/157
+        Platform.runLater(() -> scrollPane.setVvalue(1.0));
     }
 
 }

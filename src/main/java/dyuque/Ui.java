@@ -1,5 +1,6 @@
 package dyuque;
 
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -39,35 +40,36 @@ public class Ui {
     /**
      * Prints a horizontal separator line.
      */
-    public String showLine() {
+    public void showLine() {
         String output = "__________________________________________________\n";
         System.out.print(output);
-        return output;
     }
 
     /**
      * Prints the welcome message and basic usage instructions.
      */
     public String showWelcome() {
-        String output = "Hello! I'm Dyuque\n"
-                + "What can I do for you?\n"
-                + "\n"
-                + "Commands:\n"
-                + "  \"list\" --- list tasks\n"
-                + "  \"find\" --- find tasks by description\n"
-                + "             find <keyword>\n"
-                + "  \"delete\" - delete a task\n"
-                + "  \"mark\" --- mark a task as done\n"
-                + "             mark <task number>\n"
-                + "  \"unmark\" - unmark a task as done\n"
-                + "             unmark <task number>\n"
-                + "  \"bye\" ---- quit Dyuque\n"
-                + "Task types:\n"
-                + "  todo ----- \"todo <description>\"\n"
-                + "  deadline - \"deadline <description> /by <YYYY-MM-DD>\"\n"
-                + "  event ---- \"event <description> /from <YYYY-MM-DD> /to <YYYY-MM-D\"\n"
-                + "\n"
-                + "Enter a new task or command:\n";
+        String output = """
+                Hello! I'm Dyuque.
+                What can I do for you?
+                
+                Commands:
+                  "list" --- list tasks
+                  "find" --- find tasks by description
+                             find <keyword>
+                  "delete" - delete a task
+                  "mark" --- mark a task as done
+                             mark <task number>
+                  "unmark" - unmark a task as done
+                             unmark <task number>
+                  "bye" ---- quit Dyuque
+                Task types:
+                  todo ----- "todo <description>"
+                  deadline - "deadline <description> /by <YYYY-MM-DD>"
+                  event ---- "event <description> /from <YYYY-MM-DD> /to <YYYY-MM-D"
+                
+                Enter a new task or command:
+                """;
 
         System.out.println(output);
         return output;
@@ -77,16 +79,114 @@ public class Ui {
      * Prints the goodbye message.
      */
     public String showGoodbye() {
-        System.out.println("Goodbye, hope to see you again soon!");
-        return "Goodbye, hope to see you again soon!";
+        String message = "Goodbye, hope to see you again soon!";
+        System.out.println(message);
+        return message;
+    }
+
+//    /**
+//     * Prints the specified message without adding extra formatting.
+//     *
+//     * @param message Message to print.
+//     */
+//    public String showMessage(String message) {
+//        System.out.print(message);
+//        return message;
+//    }
+
+    /**
+     * Formats and displays a list of tasks.
+     * Message is varied depending on if tasks is a filtered subset.
+     *
+     * @param tasks List of tasks to display.
+     * @param isFiltered Whether tasks is a filtered subset or not.
+     * @return Formatted message.
+     */
+    public String formatTaskList(List<Task> tasks, boolean isFiltered) {
+        StringBuilder output = new StringBuilder();
+        output.append("You have (").append(tasks.size());
+
+        if (isFiltered) {
+            output.append(") tasks:\n");
+        } else {
+            output.append(") matching tasks:\n");
+        }
+
+        int i = 1;
+        for (Task task : tasks) {
+            output.append(i++)
+                    .append(". ")
+                    .append(task)
+                    .append(System.lineSeparator());
+        }
+
+        String message = output.toString();
+        System.out.print(message);
+        return message;
     }
 
     /**
-     * Prints the specified message without adding extra formatting.
+     * Formats and displays a task addition confirmation.
      *
-     * @param message Message to print.
+     * @param addedTask The task that was added.
+     * @param totalCount New total number of tasks.
+     * @return Formatted message.
      */
-    public String showMessage(String message) {
+    public String formatTaskAdded(Task addedTask, int totalCount) {
+        String message = "Added:\n"
+                + addedTask + System.lineSeparator()
+                + "You now have (" + totalCount + ") tasks."
+                + System.lineSeparator();
+
+        System.out.print(message);
+        return message;
+    }
+
+    /**
+     * Formats and displays a task deletion confirmation.
+     *
+     * @param deletedTask The task that was deleted.
+     * @param remainingCount New total number of tasks.
+     * @return Formatted message.
+     */
+    public String formatTaskDeleted(Task deletedTask, int remainingCount) {
+        String message = "Removed:\n"
+                + deletedTask + System.lineSeparator()
+                + "You now have (" + remainingCount + ") tasks."
+                + System.lineSeparator();
+
+        System.out.print(message);
+        return message;
+    }
+
+    /**
+     * Formats and displays a task marked as done.
+     *
+     * @param markedTask The task that was marked.
+     * @return Formatted message.
+     */
+    public String formatTaskMarked(Task markedTask) {
+        String message = "Nice! I've marked this task as done:"
+                + System.lineSeparator()
+                + markedTask
+                + System.lineSeparator();
+
+        System.out.print(message);
+        return message;
+    }
+
+    /**
+     * Formats and displays a task unmarked as done.
+     *
+     * @param unmarkedTask The task that was unmarked.
+     * @return Formatted message.
+     */
+    public String formatTaskUnmarked(Task unmarkedTask) {
+        String message = "OK, I've marked this task as not done yet:"
+                + System.lineSeparator()
+                + unmarkedTask
+                + System.lineSeparator();
+
         System.out.print(message);
         return message;
     }
