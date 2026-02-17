@@ -21,19 +21,20 @@ public class DyuqueExecuteCommandTest {
         boolean goodbyeShown = false;
         int lineCount = 0;
 
-        @Override
         public void showMessage(String message) {
             lastMessage = message;
         }
 
         @Override
-        public void showError(String message) {
+        public String showError(String message) {
             lastError = message;
+            return message;
         }
 
         @Override
-        public void showGoodbye() {
+        public String showGoodbye() {
             goodbyeShown = true;
+            return null;
         }
 
         @Override

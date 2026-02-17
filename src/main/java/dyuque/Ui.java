@@ -63,6 +63,7 @@ public class Ui {
                   "unmark" - unmark a task as done
                              unmark <task number>
                   "bye" ---- quit Dyuque
+                  "undo" --- undo previous state change
                 Task types:
                   todo ----- "todo <description>"
                   deadline - "deadline <description> /by <YYYY-MM-DD>"
@@ -83,16 +84,6 @@ public class Ui {
         System.out.println(message);
         return message;
     }
-
-//    /**
-//     * Prints the specified message without adding extra formatting.
-//     *
-//     * @param message Message to print.
-//     */
-//    public String showMessage(String message) {
-//        System.out.print(message);
-//        return message;
-//    }
 
     /**
      * Formats and displays a list of tasks.
@@ -160,35 +151,23 @@ public class Ui {
     }
 
     /**
-     * Formats and displays a task marked as done.
+     * Formats and displays a task's state change.
      *
-     * @param markedTask The task that was marked.
+     * @param task The task that was marked.
      * @return Formatted message.
      */
-    public String formatTaskMarked(Task markedTask) {
-        String message = "Nice! I've marked this task as done:"
-                + System.lineSeparator()
-                + markedTask
-                + System.lineSeparator();
+    public String formatTaskChangedState(Task task, Task.State state) {
+        StringBuilder message = new StringBuilder();
+        switch (state) {
+            case MARKED -> message.append("Nice! I've marked this task as done:");
+            case UNMARKED -> message.append("OK, I've marked this task as not done yet:");
+        }
+        message.append(System.lineSeparator())
+                .append(task)
+                .append(System.lineSeparator());
 
         System.out.print(message);
-        return message;
-    }
-
-    /**
-     * Formats and displays a task unmarked as done.
-     *
-     * @param unmarkedTask The task that was unmarked.
-     * @return Formatted message.
-     */
-    public String formatTaskUnmarked(Task unmarkedTask) {
-        String message = "OK, I've marked this task as not done yet:"
-                + System.lineSeparator()
-                + unmarkedTask
-                + System.lineSeparator();
-
-        System.out.print(message);
-        return message;
+        return message.toString();
     }
 
     /**
@@ -196,10 +175,12 @@ public class Ui {
      *
      * @param message Error message to print.
      */
-    public void showError(String message) {
+    public String showError(String message) {
+        String output = "[ERROR] " + message;
         System.out.print(ANSI_RED);
-        System.out.println("[ERROR] " + message);
+        System.out.println(output);
         System.out.print(ANSI_RESET);
+        return output;
     }
 
     /**

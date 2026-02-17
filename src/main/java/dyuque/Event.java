@@ -49,7 +49,7 @@ public class Event extends Task{
     @Override
     public String toString() {
         return "[E]"
-                + (isDone ? "[X] " : "[ ] ")
+                + (state.equals(State.MARKED) ? "[X] " : "[ ] ")
                 + description
                 + " (from: " + fromDate.format(OUTPUT_FORMAT) + ")"
                 + " (to: " + toDate.format(OUTPUT_FORMAT) + ")";

@@ -3,8 +3,18 @@ package dyuque;
 public abstract class Task {
     /** Description of the task. */
     protected String description;
-    /** Whether the task is marked as done. */
-    protected Boolean isDone;
+    /** Whether the task state is marked or unmarked. */
+    protected State state;
+
+    /**
+     * Represents the state of a task.
+     */
+    public enum State {
+        /** The task is finished and will be shown as such. */
+        MARKED,
+        /** The task is still pending and requires action. */
+        UNMARKED
+    }
 
     /**
      * Creates a task with the specified description.
@@ -13,32 +23,35 @@ public abstract class Task {
      */
     public Task(String description) {
         this.description = description;
-        this.isDone = false;
+        this.state = State.UNMARKED;
     }
 
     /**
-     * Marks this task as completed.
+     * Sets the task's state.
      */
-    public void markDone() {
-        this.isDone = true;
+    public void setState(State state) {
+        this.state = state;
     }
 
     /**
-     * Marks this task as not completed.
+     * Returns the task description.
      */
-    public void markUndone() {
-        this.isDone = false;
-    }
-
     public String getDescription() {
         return this.description;
+    }
+
+    /**
+     * Returns the task state.
+     */
+    public State getState() {
+        return this.state;
     }
 
     /**
      * Returns the storage flag representing whether this task is done.
      */
     protected String doneFlag() {
-        return isDone ? "1" : "0";
+        return state.equals(State.MARKED) ? "1" : "0";
     }
 
     /**

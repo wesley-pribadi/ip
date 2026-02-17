@@ -13,14 +13,6 @@ public class TaskList {
     private final Storage storage;
 
     /**
-     * Represents the completion state to apply when marking or unmarking a task.
-     */
-    public enum MarkedState {
-        MARKED,
-        UNMARKED
-    }
-
-    /**
      * Creates a task list with the specified initial items and storage handler.
      *
      * @param initialItems Initial tasks to manage.
@@ -77,6 +69,23 @@ public class TaskList {
     }
 
     /**
+     * Adds the specified task at a specific index to this task list.
+     *
+     * @param index Index of task to add.
+     * @param task Task to add.
+     * @return The added task.
+     * @throws DyuqueException If the task list cannot be saved.
+     */
+    public Task add(int index, Task task) throws DyuqueException {
+        int previousSize = size();
+        items.add(index - 1, task);
+        assert size() == previousSize + 1 : "Task list size should increase after adding";
+
+        saveIfEnabled();
+        return task;
+    }
+
+    /**
      * Deletes the task at the specified 0-based index.
      *
      * @param arrayIndex 0-based index of the task to delete.
@@ -102,16 +111,22 @@ public class TaskList {
      * @return The updated task.
      * @throws DyuqueException If the index is invalid or the task list cannot be saved.
      */
-    public Task setMarkedState(MarkedState state, int arrayIndex) throws DyuqueException {
+    public Task setMarkedState(Task.State state, int arrayIndex) throws DyuqueException {
         Task task = getTask(arrayIndex);
-
-        switch (state) {
-            case MARKED -> task.markDone();
-            case UNMARKED -> task.markUndone();
-        }
-
+        task.setState(state);
         saveIfEnabled();
         return task;
+    }
+
+    /**
+     * Gets the marked state of the task at the specified 0-based index.
+     *
+     * @param arrayIndex 0-based index of the task to update.
+     * @return The task state.
+     * @throws DyuqueException If the index is invalid or the task list cannot be saved.
+     */
+    public Task.State getTaskState(int arrayIndex) throws DyuqueException {
+        return getTask(arrayIndex).getState();
     }
 
     /**
