@@ -1,58 +1,60 @@
 package dyuque;
 
 import java.util.List;
-import java.util.Scanner;
 
 /**
- * Handles user interaction via standard input and output.
+ * Formats user-facing messages for display.
  */
 public class Ui {
     /** ANSI escape code for resetting console color output. */
     private static final String ANSI_RESET = "\u001B[0m";
     /** ANSI escape code for red console color output. */
     private static final String ANSI_RED = "\u001B[31m";
+    /** ANSI escape code for gray console color output. */
+    private static final String ANSI_GRAY = "\u001B[90m";
 
-    private final Scanner scanner;
-
-    /**
-     * Creates a UI instance that reads from standard input.
-     */
-    public Ui() {
-        this.scanner = new Scanner(System.in);
-    }
-
-    /**
-     * Returns the next line of user input.
-     *
-     * @return User input line.
-     */
-    public String readLine() {
-        return scanner.nextLine();
-    }
-
-    /**
-     * Prints the command prompt symbol.
-     */
-    public void showPrompt() {
-        System.out.print("> ");
-    }
+//    private final Scanner scanner;
+//
+//    /**
+//     * Creates a UI instance that reads from standard input.
+//     */
+//    public Ui() {
+//        this.scanner = new Scanner(System.in);
+//    }
+//    /**
+//     * Returns the next line of user input.
+//     *
+//     * @return User input line.
+//     */
+//    public String readLine() {
+//        return scanner.nextLine();
+//    }
 
     /**
      * Prints a horizontal separator line.
      */
-    public void showLine() {
-        String output = "__________________________________________________\n";
-        System.out.print(output);
+    public void showLine(String input) {
+        int count = 0;
+        int maxLength = input.lines()
+                .mapToInt(String::length)
+                .max()
+                .orElse(3);
+
+        StringBuilder output = new StringBuilder();
+        output.append(">");
+        while (count++ < maxLength) {
+            output.append("-");
+        }
+        output.append("<");
+
+        printlnGrayColour(output.toString());
     }
 
     /**
-     * Prints the welcome message and basic usage instructions.
+     * Prints the usage instructions.
      */
-    public String showWelcome() {
+    public String showHelp() {
         String output = """
-                Hello! I'm Dyuque.
-                What can I do for you?
-                
                 Commands:
                   "list" --- list tasks
                   "find" --- find tasks by description
@@ -68,8 +70,6 @@ public class Ui {
                   todo ----- "todo <description>"
                   deadline - "deadline <description> /by <YYYY-MM-DD>"
                   event ---- "event <description> /from <YYYY-MM-DD> /to <YYYY-MM-D"
-                
-                Enter a new task or command:
                 """;
 
         System.out.println(output);
@@ -77,9 +77,36 @@ public class Ui {
     }
 
     /**
-     * Prints the goodbye message.
+     * Prints the welcome message and basic usage instructions.
      */
-    public String showGoodbye() {
+    public String showWelcome() {
+        StringBuilder output = new StringBuilder("""
+                Hello! I'm Dyuque.
+                What can I do for you?
+                """);
+        output.append(System.lineSeparator());
+        output.append(showHelp());
+        output.append(System.lineSeparator());
+        output.append(showPrompt());
+
+        System.out.println(output);
+        return output.toString();
+    }
+
+    /**
+     * Prints the welcome message and basic usage instructions.
+     */
+    public String showPrompt() {
+        String output = "Enter a new task or command:";
+
+        System.out.println(output);
+        return output;
+    }
+
+        /**
+         * Prints the goodbye message.
+         */
+    public static String showGoodbye() {
         String message = "Goodbye, hope to see you again soon!";
         System.out.println(message);
         return message;
@@ -98,9 +125,9 @@ public class Ui {
         output.append("You have (").append(tasks.size());
 
         if (isFiltered) {
-            output.append(") tasks:\n");
+            output.append(") matching tasks:\n\n");
         } else {
-            output.append(") matching tasks:\n");
+            output.append(") tasks:\n\n");
         }
 
         int i = 1;
@@ -125,9 +152,8 @@ public class Ui {
      */
     public String formatTaskAdded(Task addedTask, int totalCount) {
         String message = "Added:\n"
-                + addedTask + System.lineSeparator()
-                + "You now have (" + totalCount + ") tasks."
-                + System.lineSeparator();
+                + addedTask
+                + formatTotalTaskCount(totalCount);
 
         System.out.print(message);
         return message;
@@ -137,17 +163,23 @@ public class Ui {
      * Formats and displays a task deletion confirmation.
      *
      * @param deletedTask The task that was deleted.
-     * @param remainingCount New total number of tasks.
+     * @param totalCount New total number of tasks.
      * @return Formatted message.
      */
-    public String formatTaskDeleted(Task deletedTask, int remainingCount) {
+    public String formatTaskDeleted(Task deletedTask, int totalCount) {
         String message = "Removed:\n"
-                + deletedTask + System.lineSeparator()
-                + "You now have (" + remainingCount + ") tasks."
-                + System.lineSeparator();
+                + deletedTask
+                + formatTotalTaskCount(totalCount);
 
         System.out.print(message);
         return message;
+    }
+
+    private String formatTotalTaskCount(int totalCount) {
+        return System.lineSeparator()
+        + System.lineSeparator()
+        + "You now have (" + totalCount + ") tasks."
+        + System.lineSeparator();
     }
 
     /**
@@ -177,20 +209,19 @@ public class Ui {
      */
     public static String showError(String message) {
         String output = "[ERROR] " + message;
-        System.out.print(ANSI_RED);
-        System.out.println(output);
-        System.out.print(ANSI_RESET);
+        printlnRedColour(output);
         return output;
     }
 
-    /**
-     * Prints the specified message as a fatal error in red.
-     *
-     * @param message Error message to print.
-     */
-    public void showFatal(String message) {
+    private static void printlnRedColour(String output) {
         System.out.print(ANSI_RED);
-        System.out.println("[FATAL] " + message);
+        System.out.println(output);
+        System.out.print(ANSI_RESET);
+    }
+
+    private static void printlnGrayColour(String output) {
+        System.out.print(ANSI_GRAY);
+        System.out.println(output);
         System.out.print(ANSI_RESET);
     }
 }

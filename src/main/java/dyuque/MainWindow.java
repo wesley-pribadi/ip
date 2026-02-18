@@ -3,13 +3,14 @@ package dyuque;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.util.Objects;
@@ -18,69 +19,75 @@ import java.util.Objects;
  * Controller for the main GUI.
  */
 public class MainWindow extends AnchorPane {
+
+    // Helper record to encapsulate response data
+    private record ResponseResult(
+                String response,
+                boolean isExitRequested,
+                String errorMessage) {
+    }
+
+    private final Image userImage = new Image(Objects.requireNonNull(
+            getClass().getResource("/images/user-icon.png")).toExternalForm());
+    private final Image dyuqueImage = new Image(Objects.requireNonNull(
+            getClass().getResource("/images/dyuque-icon.png")).toExternalForm());
+
     @FXML
     private ScrollPane scrollPane;
     @FXML
     private VBox dialogContainer;
     @FXML
-    private TextField userInput;
+    private TextArea userInput;
     @FXML
     private Button sendButton;
 
     private Dyuque dyuque;
 
-    private final Image userImage = new Image(Objects.requireNonNull(
-            this.getClass().getResourceAsStream("/images/DaUser.png")));
-    private final Image dukeImage = new Image(Objects.requireNonNull(
-            this.getClass().getResourceAsStream("/images/DaDuke.png")));
-
-    /** Injects the Dyuque instance */
+    /**
+     * Injects the Dyuque instance and displays the welcome message.
+     *
+     * @param dyuque The Dyuque instance to use
+     */
     public void setDyuque(Dyuque dyuque) {
         // Initialise Dyuque instance
         this.dyuque = dyuque;
 
         // Show welcome message
-        String welcome = dyuque.getWelcomeMessage();
-        dialogContainer.getChildren().add(
-                DialogBox.getDyuqueDialog(welcome, dukeImage)
-        );
+        String welcome = dyuque.getWelcomeMessage(); // TODO: Replace with Ui.showWelcome() after refactor to static
+        appendDyuqueMessage(welcome);
+
+        Platform.runLater(() -> userInput.requestFocus());
+    }
+
+    @FXML
+    public void initialize() {
+        scrollPane.setFitToWidth(true);
+
+        // Handles enter-key
+        // Needed after switching from TextField to TextArea
+        userInput.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER && !event.isShiftDown()) {
+                event.consume();
+                handleUserInput();
+            }
+        });
     }
 
     /**
-     * Creates two dialog boxes, one echoing user input and the other containing Duke's reply and then appends them to
-     * the dialog container. Clears the user input after processing.
+     * Creates two dialog boxes, one echoing user input and the other containing Dyuque's reply
+     * and then appends them to the dialog container. Then clears the user input after processing.
      */
     @FXML
     private void handleUserInput() {
-        String input = userInput.getText();
-
-        dialogContainer.getChildren().add(
-                DialogBox.getUserDialog(input, userImage)
-        );
-
-        try {
-            String response = dyuque.getResponse(input);
-
-            dialogContainer
-                    .getChildren()
-                    .add(DialogBox.getDyuqueDialog(response, dukeImage));
-
-            if (!dyuque.getShouldContinueExecution()) {
-                userInput.setDisable(true);
-                sendButton.setDisable(true);
-
-                PauseTransition delay = new PauseTransition(Duration.millis(600));
-                delay.setOnFinished(e -> ((Stage) this.getScene().getWindow()).close());
-                delay.play();
-                Platform.exit();
-            }
-        } catch (DyuqueException e) {
-            dialogContainer
-                    .getChildren()
-                    .add(DialogBox.getDyuqueDialog(Ui.showError(e.getMessage()), dukeImage));
+        if (dyuque == null) {
+            return;
         }
 
-        userInput.clear();
+        String input = processUserInput();
+        if (input == null) {
+            return;
+        }
+        processDyuqueOutput(input);
 
         // @@author wesley-pribadi-reused
         // Autoscroll downward after the new messages have been added
@@ -88,4 +95,91 @@ public class MainWindow extends AnchorPane {
         Platform.runLater(() -> scrollPane.setVvalue(1.0));
     }
 
+    private String processUserInput() {
+        String input = getAndValidateUserInput();
+        if (input == null) {
+            return null;
+        }
+
+        updateUIWithUserInput(input);
+
+        return input;
+    }
+
+    private String getAndValidateUserInput() {
+        String input = userInput.getText();
+        if (input == null || input.trim().isEmpty()) {
+            userInput.clear();
+            return null;
+        }
+        input = input.stripTrailing();
+        return input;
+    }
+
+    private void updateUIWithUserInput(String input) {
+        appendUserMessage(input);
+        userInput.clear();
+    }
+
+    private void processDyuqueOutput(String input) {
+        ResponseResult response = generateDyuqueResponse(input);
+        handleDyuqueResponse(response);
+    }
+
+    private ResponseResult generateDyuqueResponse(String input) {
+        try {
+            String response = dyuque.getResponse(input);
+            boolean isExitRequested = dyuque.isExitRequested();
+            return new ResponseResult(response, isExitRequested, null);
+        } catch (DyuqueException e) {
+            return new ResponseResult(null, false, e.getMessage());
+        }
+    }
+
+    private void handleDyuqueResponse(ResponseResult response) {
+        if (response.errorMessage != null) {
+            appendDyuqueMessage(Ui.showError(response.errorMessage));
+        } else {
+            appendDyuqueMessage(response.response);
+            if (response.isExitRequested) {
+                exitGracefully();
+            }
+        }
+    }
+
+    private void appendUserMessage(String input) {
+        try {
+            dialogContainer.getChildren().add(DialogBox.getUserDialog(input, userImage));
+        } catch (IllegalStateException e) {
+            showFatalDialogAndExit(e.getMessage());
+        }
+    }
+
+    private void appendDyuqueMessage(String response) {
+        try {
+            dialogContainer.getChildren().add(DialogBox.getDyuqueDialog(response, dyuqueImage));
+        } catch (IllegalStateException e) {
+            showFatalDialogAndExit(e.getMessage());
+        }
+    }
+
+    private void exitGracefully() {
+        userInput.setDisable(true);
+        sendButton.setDisable(true);
+
+        // getResponse handles Ui.showGoodbye()
+        PauseTransition delay = new PauseTransition(Duration.millis(1500));
+        delay.setOnFinished(e -> Platform.exit());
+        delay.play();
+    }
+
+    private void showFatalDialogAndExit(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Fatal Error");
+        alert.setHeaderText("Dyuque encountered a fatal UI error");
+        alert.setContentText(message);
+        alert.showAndWait();
+
+        Platform.exit();
+    }
 }

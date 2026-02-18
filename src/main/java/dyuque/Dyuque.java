@@ -1,5 +1,6 @@
 package dyuque;
 
+import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
@@ -10,8 +11,8 @@ import java.util.Set;
  * Runs the Dyuque chatbot application and coordinates command execution.
  */
 public class Dyuque {
-    /** Default relative path used to store saved tasks. */
-    private static final String SAVE_PATH = "./data/dyuque.txt";
+    /** Default path used to store saved tasks. */
+    private static final Path SAVE_PATH = Path.of("dyuque_data", "dyuque.txt");
 
     /** UI component responsible for interacting with the user. */
     private final Ui ui;
@@ -24,12 +25,14 @@ public class Dyuque {
     /** Stack of UndoActions to support undo command */
     private final Deque<UndoAction> undoStack = new ArrayDeque<>();
     /** Whether the main chat loop should continue executing. */
-    private boolean shouldContinueExecution;
+    private boolean shouldStop;
 
     /**
      * Represents the supported commands and their accepted keywords.
      */
     protected enum Command {
+        HELP("help",
+                "help"),
         LIST("list",
                 "list", "ls"),
         FIND("find <keyword>",
@@ -41,15 +44,15 @@ public class Dyuque {
         EVENT("event <description> /from <date> /to <date>",
                 "event"),
         DELETE("delete <index>",
-                "delete", "remove"),
+                "delete", "remove", "rm"),
         MARK("mark <index>",
                 "mark"),
         UNMARK("unmark <index>",
                 "unmark"),
-        EXIT("exit",
-                "bye", "exit"),
         UNDO("undo",
-                "undo");
+                "undo"),
+        EXIT("exit",
+                "bye", "exit");
 
         /** User-facing help string to use the command. */
         private final String usageHelpStr;
@@ -98,7 +101,7 @@ public class Dyuque {
         this.storage = storage;
         this.parser = parser;
         this.taskList = taskList;
-        this.shouldContinueExecution = true;
+        this.shouldStop = false;
     }
 
     /**
@@ -116,36 +119,36 @@ public class Dyuque {
         return new Dyuque(ui, storage, parser, taskList);
     }
 
-    /**
-     * Starts the chatbot application (entry point).
-     *
-     * @param args Command-line arguments.
-     */
-    public static void main(String[] args) {
-        try {
-            Dyuque.initialiseDefaults().newCliChat();
-        } catch (DyuqueException e) {
-            Ui ui = new Ui();
-            ui.showFatal("Failed to load saved tasks due to error:");
-            ui.showFatal(e.getMessage());
-        }
-    }
+//    /**
+//     * Starts the chatbot application (entry point).
+//     *
+//     * @param args Command-line arguments.
+//     */
+//    public static void main(String[] args) {
+//        try {
+//            Dyuque.initialiseDefaults().newCliChat();
+//        } catch (DyuqueException e) {
+//            Ui ui = new Ui();
+//            ui.showFatal("Failed to load saved tasks due to error:");
+//            ui.showFatal(e.getMessage());
+//        }
+//    }
 
-    /**
-     * Starts a new CLI chat session and continues until an exit command is received.
-     */
-    public void newCliChat() {
-        // Method used for debugging, will be removed before release.
-        ui.showWelcome();
-        do {
-            ui.showPrompt();
-            try {
-                getResponse(ui.readLine()); // updates shouldContinueExecution
-            } catch (DyuqueException e) {
-                ui.showError(e.getMessage());
-            }
-        } while (shouldContinueExecution);
-    }
+//    /**
+//     * Starts a new CLI chat session and continues until an exit command is received.
+//     */
+//    public void newCliChat() {
+//        // Method used for debugging, will be removed before release.
+//        ui.showWelcome();
+//        do {
+//            ui.showPrompt();
+//            try {
+//                getResponse(ui.readLine()); // updates shouldContinueExecution
+//            } catch (DyuqueException e) {
+//                ui.showError(e.getMessage());
+//            }
+//        } while (shouldContinueExecution);
+//    }
 
     /**
      * Processes user input and returns the response message for display.
@@ -155,10 +158,10 @@ public class Dyuque {
      * @throws DyuqueException If the input cannot be parsed or the command fails to execute.
      */
     public String getResponse(String input) throws DyuqueException {
-        ui.showLine();
-
         CommandArgumentPair pair = parser.parseCommand(input);
-        return executeCommand(pair);
+        String response = executeCommand(pair);
+        ui.showLine(response);  // Terminal output
+        return response;
     }
 
     /**
@@ -182,7 +185,7 @@ public class Dyuque {
          */
 
         return switch (command) {
-            case EXIT -> handleExit();
+            case HELP -> handleHelp();
             case LIST -> handleList();
             case FIND -> handleFind(arguments[0]);
 
@@ -196,12 +199,13 @@ public class Dyuque {
             case UNMARK -> handleUnmarkTask(arguments[0]);
 
             case UNDO -> handleUndo();
+
+            case EXIT -> handleExit();
         };
     }
 
-    private String handleExit() {
-        shouldContinueExecution = false;
-        return ui.showGoodbye();
+    private String handleHelp() {
+        return ui.showHelp();
     }
 
     private String handleList() {
@@ -262,9 +266,14 @@ public class Dyuque {
 
     private String handleUndo() throws DyuqueException {
         if (undoStack.isEmpty()) {
-            return ui.showError("Nothing to undo.");
+            return Ui.showError("Nothing to undo.");
         }
         return undoStack.pop().undo();
+    }
+
+    private String handleExit() {
+        requestStop();
+        return Ui.showGoodbye();
     }
 
     private int parseTaskIndex(String indexStr) throws DyuqueException {
@@ -275,11 +284,15 @@ public class Dyuque {
         }
     }
 
-    String getWelcomeMessage() {
-        return ui.showWelcome();
+    void requestStop() {
+        shouldStop = true;
     }
 
-    boolean getShouldContinueExecution() {
-        return shouldContinueExecution;
+    boolean isExitRequested() {
+        return shouldStop;
+    }
+
+    String getWelcomeMessage() {
+        return ui.showWelcome();    // TODO: Remove after static refactor
     }
 }
