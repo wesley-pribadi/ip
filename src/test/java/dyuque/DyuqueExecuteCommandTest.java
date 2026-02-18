@@ -16,25 +16,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class DyuqueExecuteCommandTest {
 
     static class FakeUi extends Ui {
-        boolean goodbyeShown = false;
-        int lineCount = 0;
-
-        @Override
-        public String showGoodbye() {
-            goodbyeShown = true;
-            return "goodbye";
-        }
-
-        @Override
-        public void showLine() {
-            lineCount++;
-        }
     }
 
     @Test
     public void executeCommand_exit_showsGoodbyeAndReturnsMessage(@TempDir Path tempDir) throws Exception {
         FakeUi ui = new FakeUi();
-        Storage storage = new Storage(tempDir.resolve("dyuque.txt").toString());
+        Storage storage = new Storage(tempDir.resolve("dyuque.txt"));
         Parser parser = new Parser();
         TaskList taskList = new TaskList(storage.load(), storage);
         Dyuque dyuque = new Dyuque(ui, storage, parser, taskList);
@@ -42,15 +29,15 @@ public class DyuqueExecuteCommandTest {
         CommandArgumentPair pair = parser.parseCommand("bye");
         String output = dyuque.executeCommand(pair);
 
-        assertTrue(ui.goodbyeShown);
         assertNotNull(output);
         assertFalse(output.isBlank());
+        assertTrue(output.contains(Ui.showGoodbye()));
     }
 
     @Test
     public void executeCommand_todo_addsTaskAndReturnsMessage(@TempDir Path tempDir) throws Exception {
         FakeUi ui = new FakeUi();
-        Storage storage = new Storage(tempDir.resolve("dyuque.txt").toString());
+        Storage storage = new Storage(tempDir.resolve("dyuque.txt"));
         Parser parser = new Parser();
         TaskList taskList = new TaskList(storage.load(), storage);
         Dyuque dyuque = new Dyuque(ui, storage, parser, taskList);
@@ -67,7 +54,7 @@ public class DyuqueExecuteCommandTest {
     @Test
     public void executeCommand_mark_nonInteger_throwsDyuqueExceptionWithNumberFormatCause(@TempDir Path tempDir) throws Exception {
         FakeUi ui = new FakeUi();
-        Storage storage = new Storage(tempDir.resolve("dyuque.txt").toString());
+        Storage storage = new Storage(tempDir.resolve("dyuque.txt"));
         Parser parser = new Parser();
         TaskList taskList = new TaskList(storage.load(), storage);
 

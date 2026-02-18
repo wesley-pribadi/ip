@@ -46,7 +46,7 @@ public class Parser {
 
     private CommandArgumentPair parseCommandArguments(Dyuque.Command command, String arguments) throws DyuqueException {
         return switch (command) {
-            case EXIT, LIST, UNDO -> new CommandArgumentPair(command, new String[0]);
+            case HELP, LIST, UNDO, EXIT -> new CommandArgumentPair(command, new String[0]);
             case DELETE, MARK, UNMARK, FIND, TODO -> parseSingleArgCommand(command, arguments);
             case EVENT -> parseEventCommand(command, arguments);
             case DEADLINE -> parseDeadlineCommand(command, arguments);

@@ -78,7 +78,7 @@ public class TaskList {
      */
     public Task add(int index, Task task) throws DyuqueException {
         int previousSize = size();
-        items.add(index - 1, task);
+        items.add(index, task);
         assert size() == previousSize + 1 : "Task list size should increase after adding";
 
         saveIfEnabled();

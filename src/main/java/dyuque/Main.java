@@ -1,34 +1,76 @@
 package dyuque;
 
 import java.io.IOException;
+import java.net.URL;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 /**
- * A GUI for Duke using FXML.
+ * A GUI for Dyuque using FXML.
  */
 public class Main extends Application {
 
-    private Dyuque dyuque = Dyuque.initialiseDefaults();
-
-    public Main() throws DyuqueException {
+    public Main() {
     }
 
     @Override
     public void start(Stage stage) {
+        final String FXML_FILEPATH = "/view/MainWindow.fxml";
+        final String CSS_FILEPATH = "/view/style.css";
+
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/view/MainWindow.fxml"));
-            AnchorPane ap = fxmlLoader.load();
+            Dyuque dyuque = Dyuque.initialiseDefaults();
+
+            FXMLLoader loader = new FXMLLoader(getResource(FXML_FILEPATH));
+            AnchorPane ap = loader.load();
+
+            MainWindow controller = loader.getController();
+            controller.setDyuque(dyuque);
+
             Scene scene = new Scene(ap);
-            stage.setScene(scene);
-            fxmlLoader.<MainWindow>getController().setDyuque(dyuque);  // inject the Duke instance
+            scene.getStylesheets().add(getResource(CSS_FILEPATH).toExternalForm());
+
+            configureStage(stage, scene);
             stage.show();
+        } catch (DyuqueException e) {
+            showFatalDialog(e.getMessage());
+            Platform.exit();
         } catch (IOException e) {
-            e.printStackTrace();
+            showFatalDialog("Failed to load GUI resources:\n" + e.getMessage());
+            Platform.exit();
         }
+    }
+
+    // Helper: Converts the null-return of getResource into a proper IOException
+    private URL getResource(String path) throws IOException {
+        URL resource = Main.class.getResource(path);
+        if (resource == null) {
+            throw new IOException("Resource not found: " + path);
+        }
+        return resource;
+    }
+
+    private static void configureStage(Stage stage, Scene scene) {
+        stage.setTitle("Dyuque");
+        stage.setScene(scene);
+        stage.setResizable(true);
+        stage.setMinWidth(600);
+        stage.setMinHeight(400);
+        stage.setWidth(700);
+        stage.setHeight(900);
+    }
+
+    private void showFatalDialog(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Fatal Error");
+        alert.setHeaderText("Failed to start Dyuque");
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
