@@ -49,12 +49,14 @@ public class MainWindow extends AnchorPane {
      * @param dyuque The Dyuque instance to use
      */
     public void setDyuque(Dyuque dyuque) {
-        // Initialise Dyuque instance
         this.dyuque = dyuque;
 
-        // Show welcome message
-        String welcome = Ui.showWelcome();
-        appendDyuqueMessage(welcome);
+        String notice = dyuque.getSavefileCreatedNotice();
+        if (!notice.isBlank()) {
+            appendDyuqueMessage(notice);
+        }
+
+        appendDyuqueMessage(Ui.showWelcome());
 
         Platform.runLater(() -> userInput.requestFocus());
     }

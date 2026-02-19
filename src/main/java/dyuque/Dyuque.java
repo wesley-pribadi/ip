@@ -253,6 +253,10 @@ public class Dyuque {
         }
     }
 
+    String getSavefileCreatedNotice() {
+        return savefileCreatedNotice;
+    }
+
     void requestStop() {
         executionShouldStop = true;
     }
