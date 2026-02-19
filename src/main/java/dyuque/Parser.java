@@ -61,34 +61,39 @@ public class Parser {
     }
 
     private CommandArgumentPair parseEventCommand(Dyuque.Command command, String arguments) throws DyuqueException {
-        int fromPos = arguments.indexOf(" /from ");
-        int toPos = arguments.indexOf(" /to ");
-        if (fromPos < 0 || toPos < 0 || toPos < fromPos) {
+        String trimmed = arguments.strip();
+        int fromIndex = trimmed.indexOf("/from");
+        int toIndex = trimmed.indexOf("/to");
+
+        if (fromIndex == -1 || toIndex == -1 || toIndex <= fromIndex) {
             throw new DyuqueException(command.getUsageHelpStr());
         }
 
-        String desc = arguments.substring(0, fromPos).trim();
-        String from = arguments.substring(fromPos + " /from ".length(), toPos).trim();
-        String to = arguments.substring(toPos + " /to ".length()).trim();
-        if (desc.isBlank() || from.isBlank() || to.isBlank()) {
+        String desc = trimmed.substring(0, fromIndex).strip();
+        String from = trimmed.substring(fromIndex + 5, toIndex).strip(); // "/from".length() = 5
+        String to = trimmed.substring(toIndex + 3).strip(); // "/to".length() = 3
+
+        if (desc.isEmpty() || from.isEmpty() || to.isEmpty()) {
             throw new DyuqueException(command.getUsageHelpStr());
         }
 
-        return new CommandArgumentPair(command, new String[]{ desc, from, to });
+        return new CommandArgumentPair(command, new String[]{desc, from, to});
     }
 
     private CommandArgumentPair parseDeadlineCommand(Dyuque.Command command, String arguments) throws DyuqueException {
-        String[] parts = arguments.split(" /by ", 2);
-        if (parts.length != 2) {
+        String trimmed = arguments.strip();
+        int byIndex = trimmed.indexOf("/by");
+        if (byIndex == -1) {
             throw new DyuqueException(command.getUsageHelpStr());
         }
 
-        String description = parts[0].strip();
-        String date = parts[1].strip();
+        String description = trimmed.substring(0, byIndex).strip();
+        String date = trimmed.substring(byIndex + 3).strip(); // "/by".length() = 3
+
         if (description.isEmpty() || date.isEmpty()) {
-            throw new DyuqueException("Description and date cannot be blank");
+            throw new DyuqueException("Description or date cannot be blank");
         }
 
-        return new CommandArgumentPair(command, new String[]{ description, date });
+        return new CommandArgumentPair(command, new String[]{description, date});
     }
 }
