@@ -32,7 +32,7 @@ Dyuque is a **desktop task manager chatbot** for keeping track of todos, deadlin
 ## Quick Start
 
 1. Ensure you have **Java 17** or later installed.
-2. Download the latest `dyuque.jar` from the [releases page]("https://github.com/wesley-pribadi/ip/releases").
+2. Download the latest `dyuque.jar` from the [releases page](https://github.com/wesley-pribadi/ip/releases).
 3. Open a terminal in the folder containing the jar and run:
    ```
    java -jar dyuque.jar
