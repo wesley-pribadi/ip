@@ -23,7 +23,7 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) {
         try {
-            Dyuque dyuque = Dyuque.initialiseDefaults();
+            Dyuque dyuque = Dyuque.initializeDefaults();
 
             FXMLLoader loader = new FXMLLoader(getResource(FXML_FILEPATH));
             AnchorPane ap = loader.load();

@@ -18,7 +18,6 @@ import javafx.util.Duration;
  * Controller for the main GUI.
  */
 public class MainWindow extends AnchorPane {
-
     // Helper record to encapsulate response data
     private record ResponseResult(
                 String response,
@@ -61,7 +60,7 @@ public class MainWindow extends AnchorPane {
     }
 
     /**
-     * Initialises the controller after the FXML layout has been loaded.
+     * Initializes the controller after the FXML layout has been loaded.
      * <p>
      * Configures the scroll pane to fit its content to the available width,
      * and sets up a key press handler on the input field so that pressing

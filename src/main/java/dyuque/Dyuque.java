@@ -107,7 +107,7 @@ public class Dyuque {
      * @return A fully initialized Dyuque instance.
      * @throws DyuqueException If saved tasks cannot be loaded.
      */
-    static Dyuque initialiseDefaults() throws DyuqueException {
+    static Dyuque initializeDefaults() throws DyuqueException {
         Parser parser = new Parser();
         Storage storage = new Storage(SAVE_PATH);
 
