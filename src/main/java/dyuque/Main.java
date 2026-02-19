@@ -7,7 +7,6 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -38,10 +37,10 @@ public class Main extends Application {
             configureStage(stage, scene);
             stage.show();
         } catch (DyuqueException e) {
-            showFatalDialog(e.getMessage());
+            Dialogs.showFatalDialogAndExit(e.getMessage());
             Platform.exit();
         } catch (IOException e) {
-            showFatalDialog("Failed to load GUI resources:\n" + e.getMessage());
+            Dialogs.showFatalDialogAndExit("Failed to load GUI resources:\n" + e.getMessage());
             Platform.exit();
         }
     }
@@ -63,13 +62,5 @@ public class Main extends Application {
         stage.setMinHeight(400);
         stage.setWidth(700);
         stage.setHeight(900);
-    }
-
-    private void showFatalDialog(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Fatal Error");
-        alert.setHeaderText("Failed to start Dyuque");
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

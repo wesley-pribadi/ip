@@ -98,7 +98,7 @@ public final class Storage {
             try {
                 processFileLine(line, tasks);
             } catch (FatalDyuqueException e) {
-                throw new FatalDyuqueException("Corrupted savefile at line " + lineNo + ":\n  " + line, e);
+                throw new FatalDyuqueException("Corrupted savefile at line " + lineNo + ":\n", e);
             }
         }
     }

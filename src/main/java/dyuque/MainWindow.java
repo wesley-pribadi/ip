@@ -5,7 +5,6 @@ import java.util.Objects;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
@@ -141,7 +140,9 @@ public class MainWindow extends AnchorPane {
             boolean isExitRequested = dyuque.isExitRequested();
             return new ResponseResult(response, isExitRequested, null);
         } catch (FatalDyuqueException e) {
-            showFatalDialogAndExit(e.getMessage());
+            System.err.println("Caught FatalDyuqueException: " + e.getMessage());
+            System.err.flush();
+            Dialogs.showFatalDialogAndExit(e.getMessage());
             return new ResponseResult(null, false, null);
         } catch (DyuqueException e) {
             return new ResponseResult(null, false, e.getMessage());
@@ -164,7 +165,7 @@ public class MainWindow extends AnchorPane {
             dialogContainer.getChildren().add(DialogBox.getUserDialog(message, userImage));
         } catch (IllegalStateException e) {
             // For missing DialogBox.fxml
-            showFatalDialogAndExit(e.getMessage());
+            Dialogs.showFatalDialogAndExit(e.getMessage());
         }
     }
 
@@ -173,7 +174,7 @@ public class MainWindow extends AnchorPane {
             dialogContainer.getChildren().add(DialogBox.getDyuqueDialog(message, dyuqueImage));
         } catch (IllegalStateException e) {
             // For missing DialogBox.fxml
-            showFatalDialogAndExit(e.getMessage());
+            Dialogs.showFatalDialogAndExit(e.getMessage());
         }
     }
 
@@ -185,15 +186,5 @@ public class MainWindow extends AnchorPane {
         PauseTransition delay = new PauseTransition(Duration.millis(1500));
         delay.setOnFinished(e -> Platform.exit());
         delay.play();
-    }
-
-    private void showFatalDialogAndExit(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Fatal Error");
-        alert.setHeaderText("Dyuque encountered a fatal UI error");
-        alert.setContentText(message);
-        alert.showAndWait();
-
-        Platform.exit();
     }
 }
