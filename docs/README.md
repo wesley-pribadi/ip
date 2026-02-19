@@ -1,6 +1,8 @@
 # Dyuque User Guide
 
-<!-- Product screenshot goes here -->
+<img src="Ui.png" alt="Screenshot of the Dyuque application">
+
+---
 
 Dyuque is a **desktop task manager chatbot** for keeping track of todos, deadlines, and events. Interact with it through a simple text-based chat interface.
 
