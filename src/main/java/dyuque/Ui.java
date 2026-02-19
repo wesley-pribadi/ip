@@ -144,9 +144,9 @@ public final class Ui {
 
     private static String formatTotalTaskCount(int totalCount) {
         return System.lineSeparator()
-        + System.lineSeparator()
-        + "You now have (" + totalCount + ") tasks."
-        + System.lineSeparator();
+                + System.lineSeparator()
+                + "You now have (" + totalCount + ") tasks."
+                + System.lineSeparator();
     }
 
     /**
@@ -155,11 +155,12 @@ public final class Ui {
      * @param task The task that was marked.
      * @return Formatted task state changed message.
      */
-    public static String formatTaskChangedState(Task task, Task.State state) {
+    public static String formatTaskChangedState(Task task, Task.State state) throws DyuqueException {
         StringBuilder output = new StringBuilder();
         switch (state) {
             case MARKED -> output.append("Nice! I've marked this task as done:");
             case UNMARKED -> output.append("OK, I've marked this task as not done yet:");
+            default -> throw new DyuqueException("Received illegal state");
         }
         output.append(System.lineSeparator())
                 .append(task)

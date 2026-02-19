@@ -136,7 +136,7 @@ public class TaskList {
         return items.size();
     }
 
-    private Task getTask(int arrayIndex) throws DyuqueException {
+    Task getTask(int arrayIndex) throws DyuqueException {
         validateIndexBounds(arrayIndex);
         return items.get(arrayIndex);
     }
@@ -150,7 +150,11 @@ public class TaskList {
     private void validateIndexBounds(int arrayIndex) throws DyuqueException {
         // arrayIndex is 0-based
         if (arrayIndex < 0 || arrayIndex >= size()) {
-            throw new DyuqueException("Task " + (arrayIndex + 1) + " does not exist.\nThere are only " + size() + " tasks");
+            throw new DyuqueException("Task "
+                    + (arrayIndex + 1)
+                    + " does not exist.\nThere are only "
+                    + size()
+                    + " tasks");
         }
     }
 }

@@ -24,6 +24,15 @@ public final class Storage {
             String to) {
     }
 
+    /**
+     * Holds the result of loading tasks from the save file.
+     *
+     * @param tasks             Tasks loaded from the save file.
+     * @param wasNewFileCreated Whether a new save file was created during loading,
+     *                          i.e. no existing save file was found.
+     */
+    public record SavefileResult(ArrayList<Task> tasks, boolean wasNewFileCreated) {}
+
     /** Path to the save file used for persistent storage. */
     private final Path filepath;
 
@@ -39,19 +48,23 @@ public final class Storage {
     /**
      * Ensures the save file and its parent directories exist.
      *
+     * @return True if new savefile was created in the process
      * @throws DyuqueException If the save directory or file cannot be created.
      */
-    public void ensureStorageExists() throws DyuqueException {
+    private boolean readOrCreateSavefile() throws DyuqueException {
         try {
             Path parent = filepath.getParent();
             if (parent != null) {
                 Files.createDirectories(parent);
             }
+
             if (Files.notExists(filepath)) {
                 Files.createFile(filepath);
+                return true;
             }
+            return false;
         } catch (IOException e) {
-            throw new DyuqueException("Could not create data folder/file:\n  " + filepath, e);
+            throw new FatalDyuqueException("Could not write to savefile:\n  " + filepath, e);
         }
     }
 
@@ -61,9 +74,10 @@ public final class Storage {
      * @return Tasks loaded from storage.
      * @throws DyuqueException If the save file cannot be created or read, or if any stored line is invalid.
      */
-    public ArrayList<Task> load() throws DyuqueException {
-        ensureStorageExists();
-        return readTasksFromFile();
+    public SavefileResult load() throws DyuqueException {
+        boolean wasNewFileCreated = readOrCreateSavefile();
+        ArrayList<Task> tasks = readTasksFromFile();
+        return new SavefileResult(tasks, wasNewFileCreated);
     }
 
     private ArrayList<Task> readTasksFromFile() throws DyuqueException {
@@ -71,15 +85,21 @@ public final class Storage {
         try (BufferedReader br = Files.newBufferedReader(filepath, StandardCharsets.UTF_8)) {
             processFileLines(br, tasks);
         } catch (IOException e) {
-            throw new DyuqueException("Could not read data file:\n  " + filepath, e);
+            throw new FatalDyuqueException("Could not read from savefile:\n  " + filepath, e);
         }
         return tasks;
     }
 
     private void processFileLines(BufferedReader reader, ArrayList<Task> tasks) throws IOException, DyuqueException {
         String line;
+        int lineNo = 0;
         while ((line = reader.readLine()) != null) {
-            processFileLine(line, tasks);
+            lineNo++;
+            try {
+                processFileLine(line, tasks);
+            } catch (FatalDyuqueException e) {
+                throw new FatalDyuqueException("Corrupted savefile at line " + lineNo + ":\n  " + line, e);
+            }
         }
     }
 
@@ -97,7 +117,7 @@ public final class Storage {
      * @throws DyuqueException If the save file cannot be created or written.
      */
     public void save(List<Task> tasks) throws DyuqueException {
-        ensureStorageExists();
+        readOrCreateSavefile();
         writeToStorageAsLines(tasks);
     }
 
@@ -108,7 +128,7 @@ public final class Storage {
                 bw.newLine();
             }
         } catch (IOException e) {
-            throw new DyuqueException("Could not write data file:\n  " + filepath, e);
+            throw new FatalDyuqueException("Could not write to savefile:\n  " + filepath, e);
         }
     }
 
@@ -127,7 +147,6 @@ public final class Storage {
         String description = parts[2].trim();
 
         validateDoneState(line, isDone);
-        validateTaskType(line, type);
 
         // Extract additional fields based on task type
         return switch (type) {
@@ -140,31 +159,25 @@ public final class Storage {
                 validateMinParts(parts, 5, "event", line);
                 yield new ParsedLineData(type, isDone, description, null, parts[3].trim(), parts[4].trim());
             }
-            default -> throw new DyuqueException("Unknown task type: " + type);
+            default -> throw new FatalDyuqueException("Unknown task type: " + type + " \n  in line:\n  " + line);
         };
     }
 
     private void validateMinParts(String[] parts, int expected, String typeName, String line) throws DyuqueException {
         if (parts.length < expected) {
-            throw new DyuqueException("Invalid " + typeName + " format in line:\n  " + line);
-        }
-    }
-
-    private static void validateTaskType(String line, String type) throws DyuqueException {
-        if (!"T".equals(type) && !"D".equals(type) && !"E".equals(type)) {
-            throw new DyuqueException("Unknown task type in line:\n  " + line);
+            throw new FatalDyuqueException("Invalid " + typeName + " format in line:\n  " + line);
         }
     }
 
     private static void validatePartsLength(String line, String[] parts) throws DyuqueException {
         if (parts.length < 3) {
-            throw new DyuqueException("Invalid formatting in line:\n  " + line);
+            throw new FatalDyuqueException("Invalid formatting in line:\n  " + line);
         }
     }
 
     private static void validateDoneState(String line, String isDone) throws DyuqueException {
         if (!"0".equals(isDone) && !"1".equals(isDone)) {
-            throw new DyuqueException("Invalid done flag in line:\n  " + line);
+            throw new FatalDyuqueException("Invalid done flag in line:\n  " + line);
         }
     }
 
@@ -177,7 +190,7 @@ public final class Storage {
             case "T" -> new Todo(data.description);
             case "D" -> new Deadline(data.description, data.by);
             case "E" -> new Event(data.description, data.from, data.to);
-            default -> throw new IllegalStateException("Unexpected task type: " + data.type);
+            default -> throw new FatalDyuqueException("Unexpected task type: " + data.type);
         };
 
         task.setState("1".equals(data.isDone)

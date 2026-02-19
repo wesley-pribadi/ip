@@ -23,8 +23,8 @@ import javafx.scene.shape.Rectangle;
  */
 @SuppressWarnings("unused")
 public class DialogBox extends HBox {
-    final int PICTURE_CORNER_RADIUS = 10;
-    final String FXML_FILEPATH = "/view/DialogBox.fxml";
+    private static final int PICTURE_CORNER_RADIUS = 10;
+    private static final String FXML_FILEPATH = "/view/DialogBox.fxml";
 
     @FXML
     private Label dialog;

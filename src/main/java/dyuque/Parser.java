@@ -60,7 +60,7 @@ public class Parser {
         return new CommandArgumentPair(command, new String[]{ arguments });
     }
 
-    private CommandArgumentPair parseEventCommand (Dyuque.Command command, String arguments) throws DyuqueException {
+    private CommandArgumentPair parseEventCommand(Dyuque.Command command, String arguments) throws DyuqueException {
         int fromPos = arguments.indexOf(" /from ");
         int toPos = arguments.indexOf(" /to ");
         if (fromPos < 0 || toPos < 0 || toPos < fromPos) {

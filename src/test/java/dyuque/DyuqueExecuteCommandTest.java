@@ -1,10 +1,6 @@
 package dyuque;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-
-import java.nio.file.Path;
-
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -13,60 +9,95 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class DyuqueExecuteCommandTest {
+import java.nio.file.Path;
 
-    @Test
-    public void executeCommand_exit_showsGoodbyeAndReturnsMessage(@TempDir Path tempDir) throws Exception {
-        Parser parser = new Parser();
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+// CHECKSTYLE.OFF: SeparatorWrap
+class DyuqueExecuteCommandTest {
+
+    // DeepSeek was used to write this class.
+
+    @TempDir
+    Path tempDir; // Reusable temporary directory for each test
+
+    private Parser parser;
+    private TaskList taskList;
+    private Dyuque dyuque;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        parser = new Parser();
         Storage storage = new Storage(tempDir.resolve("dyuque.txt"));
-        TaskList taskList = new TaskList(storage.load(), storage);
-        Dyuque dyuque = new Dyuque(parser, taskList);
-
-        CommandArgumentPair pair = parser.parseCommand("bye");
-        String output = dyuque.executeCommand(pair);
-
-        assertNotNull(output);
-        assertFalse(output.isBlank());
-        assertTrue(output.contains(Ui.showGoodbye()));
+        taskList = new TaskList(storage.load().tasks(), storage);
+        dyuque = new Dyuque(parser, taskList, "");
     }
 
-    @Test
-    public void executeCommand_todo_addsTaskAndReturnsMessage(@TempDir Path tempDir) throws Exception {
-        Parser parser = new Parser();
-        Storage storage = new Storage(tempDir.resolve("dyuque.txt"));
-        TaskList taskList = new TaskList(storage.load(), storage);
-        Dyuque dyuque = new Dyuque(parser, taskList);
+    @Nested
+    @DisplayName("executeCommand()")
+    class ExecuteCommandTests {
 
-        CommandArgumentPair pair = parser.parseCommand("todo read book");
-        String output = dyuque.executeCommand(pair);
+        @Test
+        @DisplayName("should show goodbye message on 'bye' command")
+        void byeCommand_returnsGoodbyeMessage() throws DyuqueException {
+            CommandArgumentPair pair = parser.parseCommand("bye");
+            String output = dyuque.executeCommand(pair);
 
-        assertNotNull(output);
-        assertTrue(output.contains("read book"));
-        assertEquals(1, taskList.size());
+            assertAll(
+                    () -> assertNotNull(output),
+                    () -> assertFalse(output.isBlank()),
+                    () -> assertEquals(Ui.showGoodbye(), output) // exact match instead of contains
+            );
+        }
+
+        @Test
+        @DisplayName("should add todo task and return confirmation")
+        void todoCommand_addsTaskAndReturnsMessage() throws DyuqueException {
+            CommandArgumentPair pair = parser.parseCommand("todo read book");
+            String output = dyuque.executeCommand(pair);
+
+            assertAll(
+                    () -> assertNotNull(output),
+                    () -> assertTrue(output.contains("read book")),
+                    () -> assertEquals(1, taskList.size()),
+                    () -> assertInstanceOf(Todo.class, taskList.getTask(0)), // verify task type
+                    () -> assertEquals("read book", taskList.getTask(0).getDescription())
+            );
+        }
+
+        @Test
+        @DisplayName("should throw DyuqueException with NumberFormatException cause for invalid mark argument")
+        void markCommand_nonInteger_throwsDyuqueException() throws DyuqueException {
+            CommandArgumentPair pair = parser.parseCommand("mark abc");
+
+            DyuqueException ex = assertThrows(DyuqueException.class, () -> dyuque.executeCommand(pair));
+            assertAll(
+                    () -> assertInstanceOf(NumberFormatException.class, ex.getCause()),
+                    () -> assertTrue(ex.getMessage().contains("Expected integer")),
+                    () -> assertEquals(0, taskList.size()) // ensure no task was modified
+            );
+        }
     }
 
-    @Test
-    public void executeCommand_mark_nonInteger_throwsDyuqueExceptionWithNumberFormatCause(@TempDir Path tempDir) throws Exception {
-        Parser parser = new Parser();
-        Storage storage = new Storage(tempDir.resolve("dyuque.txt"));
-        TaskList taskList = new TaskList(storage.load(), storage);
-        Dyuque dyuque = new Dyuque(parser, taskList);
+    @Nested
+    @DisplayName("parseCommand()")
+    class ParseCommandTests {
 
-        CommandArgumentPair pair = parser.parseCommand("mark abc");
+        @Test
+        @DisplayName("should parse mark with non-integer argument successfully")
+        void markCommand_nonInteger_parsesCorrectly() throws DyuqueException {
+            CommandArgumentPair pair = parser.parseCommand("mark abc");
 
-        DyuqueException ex = assertThrows(DyuqueException.class, () -> dyuque.executeCommand(pair));
-        assertInstanceOf(NumberFormatException.class, ex.getCause());
-        assertTrue(ex.getMessage().contains("Expected integer"));
-    }
-
-    @Test
-    public void parseCommand_mark_nonInteger_stillParses() throws Exception {
-        Parser parser = new Parser();
-
-        CommandArgumentPair pair = parser.parseCommand("mark abc");
-
-        assertNotNull(pair);
-        assertEquals(Dyuque.Command.MARK, pair.command());
-        assertArrayEquals(new String[]{"abc"}, pair.argument());
+            assertAll(
+                    () -> assertNotNull(pair),
+                    () -> assertEquals(Dyuque.Command.MARK, pair.command()),
+                    () -> assertArrayEquals(new String[]{"abc"}, pair.argument())
+            );
+        }
     }
 }
+// CHECKSTYLE.ON: SeparatorWrap

@@ -7,7 +7,7 @@ import java.time.format.DateTimeParseException;
 /**
  * Represents a task occurring over a date range.
  */
-public class Event extends Task{
+public class Event extends Task {
     /** Date format used when displaying events to the user. */
     private static final DateTimeFormatter OUTPUT_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy");
 
@@ -65,8 +65,8 @@ public class Event extends Task{
                 + " | "
                 + description
                 + " | "
-                + fromDate  // Store fromDate in ISO-8601 format
+                + fromDate // Store fromDate in ISO-8601 format
                 + " | "
-                + toDate;   // Store toDate in ISO-8601 format
+                + toDate; // Store toDate in ISO-8601 format
     }
 }

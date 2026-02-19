@@ -1,5 +1,11 @@
 package dyuque;
 
+/**
+ * Represents a task with a description and a completion state.
+ * <p>
+ * Concrete subclasses define specific task types (e.g. todos, deadlines, events)
+ * and must implement {@link #toStorageString()} to support persistence.
+ */
 public abstract class Task {
     /** Description of the task. */
     protected final String description;

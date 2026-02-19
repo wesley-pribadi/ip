@@ -20,8 +20,10 @@ public class Dyuque {
     private final TaskList taskList;
     /** Stack of UndoActions to support undo command */
     private final Deque<UndoAction> undoStack = new ArrayDeque<>();
-    /** Whether the main chat loop should continue executing. */
-    private boolean shouldStop;
+    /** Whether a new savefile was created during startup */
+    private final String savefileCreatedNotice;
+    /** Whether the main chat loop should stop executing. */
+    private boolean executionShouldStop;
 
     /**
      * Represents the supported commands and their accepted keywords.
@@ -32,19 +34,19 @@ public class Dyuque {
         LIST("list",
                 "list", "ls"),
         FIND("find <keyword>",
-                "find"),
+                "find", "f"),
         TODO("todo <description>",
-                "todo"),
+                "todo", "t"),
         DEADLINE("deadline <description> /by <date>",
-                "deadline"),
+                "deadline", "d"),
         EVENT("event <description> /from <date> /to <date>",
-                "event"),
+                "event", "e"),
         DELETE("delete <index>",
                 "delete", "remove", "rm"),
         MARK("mark <index>",
-                "mark"),
+                "mark", "m"),
         UNMARK("unmark <index>",
-                "unmark"),
+                "unmark", "um"),
         UNDO("undo",
                 "undo"),
         EXIT("exit",
@@ -92,10 +94,11 @@ public class Dyuque {
     }
 
     /** Package-private constructor for test classes */
-    Dyuque(Parser parser, TaskList taskList) {
+    Dyuque(Parser parser, TaskList taskList, String savefileCreatedNotice) {
         this.parser = parser;
         this.taskList = taskList;
-        this.shouldStop = false;
+        this.savefileCreatedNotice = savefileCreatedNotice;
+        this.executionShouldStop = false;
     }
 
     /**
@@ -107,9 +110,15 @@ public class Dyuque {
     static Dyuque initialiseDefaults() throws DyuqueException {
         Parser parser = new Parser();
         Storage storage = new Storage(SAVE_PATH);
-        TaskList taskList = new TaskList(storage.load(), storage);
 
-        return new Dyuque(parser, taskList);
+        Storage.SavefileResult result = storage.load();
+        TaskList taskList = new TaskList(result.tasks(), storage);
+
+        String savefileCreatedNotice = result.wasNewFileCreated()
+                ? "No save file found. Created a new one at:\n  " + SAVE_PATH
+                : "";
+
+        return new Dyuque(parser, taskList, savefileCreatedNotice);
     }
 
     /**
@@ -245,10 +254,10 @@ public class Dyuque {
     }
 
     void requestStop() {
-        shouldStop = true;
+        executionShouldStop = true;
     }
 
     boolean isExitRequested() {
-        return shouldStop;
+        return executionShouldStop;
     }
 }

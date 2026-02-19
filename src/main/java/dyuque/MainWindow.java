@@ -1,5 +1,7 @@
 package dyuque;
 
+import java.util.Objects;
+
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -12,8 +14,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-
-import java.util.Objects;
 
 /**
  * Controller for the main GUI.
@@ -59,6 +59,13 @@ public class MainWindow extends AnchorPane {
         Platform.runLater(() -> userInput.requestFocus());
     }
 
+    /**
+     * Initialises the controller after the FXML layout has been loaded.
+     * <p>
+     * Configures the scroll pane to fit its content to the available width,
+     * and sets up a key press handler on the input field so that pressing
+     * {@code Enter} submits the input, while {@code Shift+Enter} inserts a newline.
+     */
     @FXML
     public void initialize() {
         scrollPane.setFitToWidth(true);
@@ -101,7 +108,7 @@ public class MainWindow extends AnchorPane {
             return null;
         }
 
-        updateUIWithUserInput(input);
+        updateUiWithUserInput(input);
 
         return input;
     }
@@ -116,7 +123,7 @@ public class MainWindow extends AnchorPane {
         return input;
     }
 
-    private void updateUIWithUserInput(String input) {
+    private void updateUiWithUserInput(String input) {
         appendUserMessage(input);
         userInput.clear();
     }
@@ -131,6 +138,9 @@ public class MainWindow extends AnchorPane {
             String response = dyuque.getResponse(input);
             boolean isExitRequested = dyuque.isExitRequested();
             return new ResponseResult(response, isExitRequested, null);
+        } catch (FatalDyuqueException e) {
+            showFatalDialogAndExit(e.getMessage());
+            return new ResponseResult(null, false, null);
         } catch (DyuqueException e) {
             return new ResponseResult(null, false, e.getMessage());
         }
@@ -147,18 +157,20 @@ public class MainWindow extends AnchorPane {
         }
     }
 
-    private void appendUserMessage(String input) {
+    private void appendUserMessage(String message) {
         try {
-            dialogContainer.getChildren().add(DialogBox.getUserDialog(input, userImage));
+            dialogContainer.getChildren().add(DialogBox.getUserDialog(message, userImage));
         } catch (IllegalStateException e) {
+            // For missing DialogBox.fxml
             showFatalDialogAndExit(e.getMessage());
         }
     }
 
-    private void appendDyuqueMessage(String response) {
+    private void appendDyuqueMessage(String message) {
         try {
-            dialogContainer.getChildren().add(DialogBox.getDyuqueDialog(response, dyuqueImage));
+            dialogContainer.getChildren().add(DialogBox.getDyuqueDialog(message, dyuqueImage));
         } catch (IllegalStateException e) {
+            // For missing DialogBox.fxml
             showFatalDialogAndExit(e.getMessage());
         }
     }

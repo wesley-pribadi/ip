@@ -15,15 +15,14 @@ import javafx.stage.Stage;
  * A GUI for Dyuque using FXML.
  */
 public class Main extends Application {
+    private static final String FXML_FILEPATH = "/view/MainWindow.fxml";
+    private static final String CSS_FILEPATH = "/view/style.css";
 
     public Main() {
     }
 
     @Override
     public void start(Stage stage) {
-        final String FXML_FILEPATH = "/view/MainWindow.fxml";
-        final String CSS_FILEPATH = "/view/style.css";
-
         try {
             Dyuque dyuque = Dyuque.initialiseDefaults();
 

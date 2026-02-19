@@ -1,13 +1,15 @@
 package dyuque;
 
-import org.junit.jupiter.api.Test;
-
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
+import org.junit.jupiter.api.Test;
+
+// CHECKSTYLE.OFF: SeparatorWrap
 public class ParserTest {
-    // ChatGPT was used to write this test
+
+    // DeepSeek was used to write this class.
 
     @Test
     public void parseCommand_blankInput_throws() {
@@ -31,7 +33,7 @@ public class ParserTest {
     }
 
     @Test
-    public void parseCommand_todo_withExtraSpaces_parses() throws Exception {
+    public void parseCommand_todoWithExtraSpaces_parses() throws Exception {
         Parser parser = new Parser();
 
         CommandArgumentPair pair = parser.parseCommand("   todo   read book   ");
@@ -49,7 +51,7 @@ public class ParserTest {
     }
 
     @Test
-    public void parseCommand_event_missingFromOrTo_throws() {
+    public void parseCommand_eventMissingFromOrTo_throws() {
         Parser parser = new Parser();
 
         DyuqueException ex1 = assertThrows(DyuqueException.class,
@@ -78,3 +80,4 @@ public class ParserTest {
         assertEquals("Usage: mark <index>", ex.getMessage());
     }
 }
+// CHECKSTYLE.ON: SeparatorWrap
