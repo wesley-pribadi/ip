@@ -21,6 +21,7 @@ import javafx.scene.shape.Rectangle;
  * Represents a dialog box consisting of an ImageView to represent the speaker's face
  * and a label containing text from the speaker.
  */
+@SuppressWarnings("unused")
 public class DialogBox extends HBox {
     final int PICTURE_CORNER_RADIUS = 10;
     final String FXML_FILEPATH = "/view/DialogBox.fxml";

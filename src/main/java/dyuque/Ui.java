@@ -5,56 +5,20 @@ import java.util.List;
 /**
  * Formats user-facing messages for display.
  */
-public class Ui {
-    /** ANSI escape code for resetting console color output. */
-    private static final String ANSI_RESET = "\u001B[0m";
-    /** ANSI escape code for red console color output. */
-    private static final String ANSI_RED = "\u001B[31m";
-    /** ANSI escape code for gray console color output. */
-    private static final String ANSI_GRAY = "\u001B[90m";
+@SuppressWarnings("SameReturnValue")
+public final class Ui {
 
-//    private final Scanner scanner;
-//
-//    /**
-//     * Creates a UI instance that reads from standard input.
-//     */
-//    public Ui() {
-//        this.scanner = new Scanner(System.in);
-//    }
-//    /**
-//     * Returns the next line of user input.
-//     *
-//     * @return User input line.
-//     */
-//    public String readLine() {
-//        return scanner.nextLine();
-//    }
-
-    /**
-     * Prints a horizontal separator line.
-     */
-    public void showLine(String input) {
-        int count = 0;
-        int maxLength = input.lines()
-                .mapToInt(String::length)
-                .max()
-                .orElse(3);
-
-        StringBuilder output = new StringBuilder();
-        output.append(">");
-        while (count++ < maxLength) {
-            output.append("-");
-        }
-        output.append("<");
-
-        printlnGrayColour(output.toString());
+    private Ui() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
     /**
-     * Prints the usage instructions.
+     * Formats and returns the usage instructions.
+     *
+     * @return Formatted help message.
      */
-    public String showHelp() {
-        String output = """
+    public static String showHelp() {
+        return """
                 Commands:
                   "list" --- list tasks
                   "find" --- find tasks by description
@@ -71,45 +35,49 @@ public class Ui {
                   deadline - "deadline <description> /by <YYYY-MM-DD>"
                   event ---- "event <description> /from <YYYY-MM-DD> /to <YYYY-MM-D"
                 """;
-
-        System.out.println(output);
-        return output;
     }
 
     /**
-     * Prints the welcome message and basic usage instructions.
+     * Formats and returns the welcome message and basic usage instructions.
+     *
+     * @return Formatted welcome message.
      */
-    public String showWelcome() {
-        StringBuilder output = new StringBuilder("""
+    public static String showWelcome() {
+        return """
                 Hello! I'm Dyuque.
                 What can I do for you?
-                """);
-        output.append(System.lineSeparator());
-        output.append(showHelp());
-        output.append(System.lineSeparator());
-        output.append(showPrompt());
-
-        System.out.println(output);
-        return output.toString();
+                """
+                + System.lineSeparator()
+                + showHelp()
+                + System.lineSeparator()
+                + showPrompt();
     }
 
     /**
-     * Prints the welcome message and basic usage instructions.
+     * Formats and returns the welcome message and basic usage instructions.
+     *
+     * @return Formatted prompt message.
      */
-    public String showPrompt() {
-        String output = "Enter a new task or command:";
-
-        System.out.println(output);
-        return output;
+    public static String showPrompt() {
+        return "Enter a new task or command:";
     }
 
-        /**
-         * Prints the goodbye message.
-         */
+    /**
+     * Formats and returns the goodbye message.
+     *
+     * @return Formatted goodbye message.
+     */
     public static String showGoodbye() {
-        String message = "Goodbye, hope to see you again soon!";
-        System.out.println(message);
-        return message;
+        return "Goodbye, hope to see you again soon!";
+    }
+
+    /**
+     * Formats and returns the specified message as a non-fatal error in red.
+     *
+     * @param message Formatted error message.
+     */
+    public static String showError(String message) {
+        return "[ERROR] " + message;
     }
 
     /**
@@ -118,18 +86,17 @@ public class Ui {
      *
      * @param tasks List of tasks to display.
      * @param isFiltered Whether tasks is a filtered subset or not.
-     * @return Formatted message.
+     * @return Formatted list of tasks.
      */
-    public String formatTaskList(List<Task> tasks, boolean isFiltered) {
+    public static String formatTaskList(List<Task> tasks, boolean isFiltered) {
         StringBuilder output = new StringBuilder();
-        output.append("You have (").append(tasks.size());
+        formatTaskListAddHeader(tasks, isFiltered, output);
+        formatTaskListAddNumbers(tasks, output);
 
-        if (isFiltered) {
-            output.append(") matching tasks:\n\n");
-        } else {
-            output.append(") tasks:\n\n");
-        }
+        return output.toString();
+    }
 
+    private static void formatTaskListAddNumbers(List<Task> tasks, StringBuilder output) {
         int i = 1;
         for (Task task : tasks) {
             output.append(i++)
@@ -137,10 +104,16 @@ public class Ui {
                     .append(task)
                     .append(System.lineSeparator());
         }
+    }
 
-        String message = output.toString();
-        System.out.print(message);
-        return message;
+    private static void formatTaskListAddHeader(List<Task> tasks, boolean isFiltered, StringBuilder output) {
+        output.append("You have (").append(tasks.size()).append(") ");
+
+        if (isFiltered) {
+            output.append("matching tasks:\n\n");
+        } else {
+            output.append("tasks:\n\n");
+        }
     }
 
     /**
@@ -148,15 +121,12 @@ public class Ui {
      *
      * @param addedTask The task that was added.
      * @param totalCount New total number of tasks.
-     * @return Formatted message.
+     * @return Formatted task added message.
      */
-    public String formatTaskAdded(Task addedTask, int totalCount) {
-        String message = "Added:\n"
+    public static String formatTaskAdded(Task addedTask, int totalCount) {
+        return "Added:\n"
                 + addedTask
                 + formatTotalTaskCount(totalCount);
-
-        System.out.print(message);
-        return message;
     }
 
     /**
@@ -164,18 +134,15 @@ public class Ui {
      *
      * @param deletedTask The task that was deleted.
      * @param totalCount New total number of tasks.
-     * @return Formatted message.
+     * @return Formatted task deleted message.
      */
-    public String formatTaskDeleted(Task deletedTask, int totalCount) {
-        String message = "Removed:\n"
+    public static String formatTaskDeleted(Task deletedTask, int totalCount) {
+        return "Removed:\n"
                 + deletedTask
                 + formatTotalTaskCount(totalCount);
-
-        System.out.print(message);
-        return message;
     }
 
-    private String formatTotalTaskCount(int totalCount) {
+    private static String formatTotalTaskCount(int totalCount) {
         return System.lineSeparator()
         + System.lineSeparator()
         + "You now have (" + totalCount + ") tasks."
@@ -186,42 +153,18 @@ public class Ui {
      * Formats and displays a task's state change.
      *
      * @param task The task that was marked.
-     * @return Formatted message.
+     * @return Formatted task state changed message.
      */
-    public String formatTaskChangedState(Task task, Task.State state) {
-        StringBuilder message = new StringBuilder();
+    public static String formatTaskChangedState(Task task, Task.State state) {
+        StringBuilder output = new StringBuilder();
         switch (state) {
-            case MARKED -> message.append("Nice! I've marked this task as done:");
-            case UNMARKED -> message.append("OK, I've marked this task as not done yet:");
+            case MARKED -> output.append("Nice! I've marked this task as done:");
+            case UNMARKED -> output.append("OK, I've marked this task as not done yet:");
         }
-        message.append(System.lineSeparator())
+        output.append(System.lineSeparator())
                 .append(task)
                 .append(System.lineSeparator());
 
-        System.out.print(message);
-        return message.toString();
-    }
-
-    /**
-     * Prints the specified message as a non-fatal error in red.
-     *
-     * @param message Error message to print.
-     */
-    public static String showError(String message) {
-        String output = "[ERROR] " + message;
-        printlnRedColour(output);
-        return output;
-    }
-
-    private static void printlnRedColour(String output) {
-        System.out.print(ANSI_RED);
-        System.out.println(output);
-        System.out.print(ANSI_RESET);
-    }
-
-    private static void printlnGrayColour(String output) {
-        System.out.print(ANSI_GRAY);
-        System.out.println(output);
-        System.out.print(ANSI_RESET);
+        return output.toString();
     }
 }

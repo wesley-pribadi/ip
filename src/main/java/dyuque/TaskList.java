@@ -73,16 +73,14 @@ public class TaskList {
      *
      * @param index Index of task to add.
      * @param task Task to add.
-     * @return The added task.
      * @throws DyuqueException If the task list cannot be saved.
      */
-    public Task add(int index, Task task) throws DyuqueException {
+    public void add(int index, Task task) throws DyuqueException {
         int previousSize = size();
         items.add(index, task);
         assert size() == previousSize + 1 : "Task list size should increase after adding";
 
         saveIfEnabled();
-        return task;
     }
 
     /**

@@ -2,7 +2,7 @@ package dyuque;
 
 public abstract class Task {
     /** Description of the task. */
-    protected String description;
+    protected final String description;
     /** Whether the task state is marked or unmarked. */
     protected State state;
 

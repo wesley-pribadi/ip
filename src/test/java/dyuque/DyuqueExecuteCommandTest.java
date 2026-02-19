@@ -15,16 +15,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DyuqueExecuteCommandTest {
 
-    static class FakeUi extends Ui {
-    }
-
     @Test
     public void executeCommand_exit_showsGoodbyeAndReturnsMessage(@TempDir Path tempDir) throws Exception {
-        FakeUi ui = new FakeUi();
-        Storage storage = new Storage(tempDir.resolve("dyuque.txt"));
         Parser parser = new Parser();
+        Storage storage = new Storage(tempDir.resolve("dyuque.txt"));
         TaskList taskList = new TaskList(storage.load(), storage);
-        Dyuque dyuque = new Dyuque(ui, storage, parser, taskList);
+        Dyuque dyuque = new Dyuque(parser, taskList);
 
         CommandArgumentPair pair = parser.parseCommand("bye");
         String output = dyuque.executeCommand(pair);
@@ -36,29 +32,25 @@ public class DyuqueExecuteCommandTest {
 
     @Test
     public void executeCommand_todo_addsTaskAndReturnsMessage(@TempDir Path tempDir) throws Exception {
-        FakeUi ui = new FakeUi();
-        Storage storage = new Storage(tempDir.resolve("dyuque.txt"));
         Parser parser = new Parser();
+        Storage storage = new Storage(tempDir.resolve("dyuque.txt"));
         TaskList taskList = new TaskList(storage.load(), storage);
-        Dyuque dyuque = new Dyuque(ui, storage, parser, taskList);
+        Dyuque dyuque = new Dyuque(parser, taskList);
 
         CommandArgumentPair pair = parser.parseCommand("todo read book");
         String output = dyuque.executeCommand(pair);
 
         assertNotNull(output);
         assertTrue(output.contains("read book"));
-
         assertEquals(1, taskList.size());
     }
 
     @Test
     public void executeCommand_mark_nonInteger_throwsDyuqueExceptionWithNumberFormatCause(@TempDir Path tempDir) throws Exception {
-        FakeUi ui = new FakeUi();
-        Storage storage = new Storage(tempDir.resolve("dyuque.txt"));
         Parser parser = new Parser();
+        Storage storage = new Storage(tempDir.resolve("dyuque.txt"));
         TaskList taskList = new TaskList(storage.load(), storage);
-
-        Dyuque dyuque = new Dyuque(ui, storage, parser, taskList);
+        Dyuque dyuque = new Dyuque(parser, taskList);
 
         CommandArgumentPair pair = parser.parseCommand("mark abc");
 
@@ -72,6 +64,7 @@ public class DyuqueExecuteCommandTest {
         Parser parser = new Parser();
 
         CommandArgumentPair pair = parser.parseCommand("mark abc");
+
         assertNotNull(pair);
         assertEquals(Dyuque.Command.MARK, pair.command());
         assertArrayEquals(new String[]{"abc"}, pair.argument());

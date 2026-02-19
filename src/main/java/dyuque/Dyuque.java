@@ -14,10 +14,6 @@ public class Dyuque {
     /** Default path used to store saved tasks. */
     private static final Path SAVE_PATH = Path.of("dyuque_data", "dyuque.txt");
 
-    /** UI component responsible for interacting with the user. */
-    private final Ui ui;
-    /** Storage component responsible for loading and saving tasks. */
-    private final Storage storage;
     /** Parser component responsible for converting user input into commands. */
     private final Parser parser;
     /** In-memory list of tasks managed by the chatbot. */
@@ -96,9 +92,7 @@ public class Dyuque {
     }
 
     /** Package-private constructor for test classes */
-    Dyuque(Ui ui, Storage storage, Parser parser, TaskList taskList) {
-        this.ui = ui;
-        this.storage = storage;
+    Dyuque(Parser parser, TaskList taskList) {
         this.parser = parser;
         this.taskList = taskList;
         this.shouldStop = false;
@@ -111,44 +105,12 @@ public class Dyuque {
      * @throws DyuqueException If saved tasks cannot be loaded.
      */
     static Dyuque initialiseDefaults() throws DyuqueException {
-        Ui ui = new Ui();
-        Storage storage = new Storage(SAVE_PATH);
         Parser parser = new Parser();
+        Storage storage = new Storage(SAVE_PATH);
         TaskList taskList = new TaskList(storage.load(), storage);
 
-        return new Dyuque(ui, storage, parser, taskList);
+        return new Dyuque(parser, taskList);
     }
-
-//    /**
-//     * Starts the chatbot application (entry point).
-//     *
-//     * @param args Command-line arguments.
-//     */
-//    public static void main(String[] args) {
-//        try {
-//            Dyuque.initialiseDefaults().newCliChat();
-//        } catch (DyuqueException e) {
-//            Ui ui = new Ui();
-//            ui.showFatal("Failed to load saved tasks due to error:");
-//            ui.showFatal(e.getMessage());
-//        }
-//    }
-
-//    /**
-//     * Starts a new CLI chat session and continues until an exit command is received.
-//     */
-//    public void newCliChat() {
-//        // Method used for debugging, will be removed before release.
-//        ui.showWelcome();
-//        do {
-//            ui.showPrompt();
-//            try {
-//                getResponse(ui.readLine()); // updates shouldContinueExecution
-//            } catch (DyuqueException e) {
-//                ui.showError(e.getMessage());
-//            }
-//        } while (shouldContinueExecution);
-//    }
 
     /**
      * Processes user input and returns the response message for display.
@@ -159,9 +121,7 @@ public class Dyuque {
      */
     public String getResponse(String input) throws DyuqueException {
         CommandArgumentPair pair = parser.parseCommand(input);
-        String response = executeCommand(pair);
-        ui.showLine(response);  // Terminal output
-        return response;
+        return executeCommand(pair);
     }
 
     /**
@@ -205,17 +165,17 @@ public class Dyuque {
     }
 
     private String handleHelp() {
-        return ui.showHelp();
+        return Ui.showHelp();
     }
 
     private String handleList() {
         List<Task> allTasks = taskList.getAllTasks();
-        return ui.formatTaskList(allTasks, false);
+        return Ui.formatTaskList(allTasks, false);
     }
 
     private String handleFind(String keyword) {
         List<Task> matchingTasks = taskList.find(keyword);
-        return ui.formatTaskList(matchingTasks, true);
+        return Ui.formatTaskList(matchingTasks, true);
     }
 
     private String handleAddTask(Task task) throws DyuqueException {
@@ -224,10 +184,10 @@ public class Dyuque {
 
         undoStack.push(() -> {
             Task deletedTask = taskList.delete(addedIndex);
-            return ui.formatTaskDeleted(deletedTask, taskList.size());
+            return Ui.formatTaskDeleted(deletedTask, taskList.size());
         });
 
-        return ui.formatTaskAdded(addedTask, taskList.size());
+        return Ui.formatTaskAdded(addedTask, taskList.size());
     }
 
     private String handleDeleteTask(String indexStr) throws DyuqueException {
@@ -236,10 +196,10 @@ public class Dyuque {
 
         undoStack.push(() -> {
             taskList.add(index, deletedTask);
-            return ui.formatTaskAdded(deletedTask, taskList.size());
+            return Ui.formatTaskAdded(deletedTask, taskList.size());
         });
 
-        return ui.formatTaskDeleted(deletedTask, taskList.size());
+        return Ui.formatTaskDeleted(deletedTask, taskList.size());
     }
 
     private String handleMarkTask(String indexStr) throws DyuqueException {
@@ -258,10 +218,10 @@ public class Dyuque {
 
         undoStack.push(() -> {
             Task restoredTask = taskList.setMarkedState(previousTaskState, index);
-            return ui.formatTaskChangedState(restoredTask, previousTaskState);
+            return Ui.formatTaskChangedState(restoredTask, previousTaskState);
         });
 
-        return ui.formatTaskChangedState(updatedTask, newState);
+        return Ui.formatTaskChangedState(updatedTask, newState);
     }
 
     private String handleUndo() throws DyuqueException {
@@ -290,9 +250,5 @@ public class Dyuque {
 
     boolean isExitRequested() {
         return shouldStop;
-    }
-
-    String getWelcomeMessage() {
-        return ui.showWelcome();    // TODO: Remove after static refactor
     }
 }

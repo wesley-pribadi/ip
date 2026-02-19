@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Loads tasks from disk and saves task updates to disk.
  */
-public class Storage {
+public final class Storage {
     // Consulted ChatGPT when writing this class
 
     private record ParsedLineData(
@@ -186,49 +186,4 @@ public class Storage {
 
         return task;
     }
-
-//    private Task parseLineToTask(String line) throws DyuqueException {
-//        /* Format:
-//         * T | 0/1 | description
-//         * D | 0/1 | description | by
-//         * E | 0/1 | description | from | to
-//         */
-//
-//        String[] parts = line.split("\\s*\\|\\s*", -1);
-//        if (parts.length < 3) {
-//            throw new DyuqueException("Invalid formatting in line:\n  " + line);
-//        }
-//        String type = parts[0].trim();
-//        String doneState = parts[1].trim();
-//        String description = parts[2].trim();
-//
-//        // create task
-//        Task task = switch (type) {
-//            case "T" -> new Todo(description);
-//            case "D" -> {
-//                if (parts.length < 4) {
-//                    throw new DyuqueException("Invalid deadline format:\n  " + line);
-//                }
-//                yield new Deadline(description, parts[3].trim());
-//            }
-//            case "E" -> {
-//                if (parts.length < 5) {
-//                    throw new DyuqueException("Invalid event format:\n  " + line);
-//                }
-//                yield new Event(description, parts[3].trim(), parts[4].trim());
-//            }
-//            default -> throw new DyuqueException("Unknown task type in line:\n  " + line);
-//        };
-//
-//        // set task doneState
-//        if ("1".equals(doneState)) {
-//            task.setState(Task.State.MARKED);
-//        } else if ("0".equals(doneState)) {
-//            task.setState(Task.State.UNMARKED);
-//        } else {
-//            throw new DyuqueException("Invalid done flag in line:\n  " + line);
-//        }
-//
-//        return task;
-//    }
 }

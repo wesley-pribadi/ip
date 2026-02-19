@@ -1,33 +1,40 @@
 /* App background */
+/*noinspection ALL*/
 .root {
     -fx-background-color: linear-gradient(to top, #FFFFFF, #97BFCB);
 }
 
+/*noinspection ALL*/
 .user-bubble {
     -fx-background-color: #135193;
     -fx-background-radius: 15;
     -fx-padding: 10 14 10 14;
 }
 
+/*noinspection ALL*/
 .user-bubble .label {
     -fx-text-fill: #FFFFFF;
 }
 
+/*noinspection ALL*/
 .dyuque-bubble {
     -fx-background-color: #7A3E3A;
     -fx-background-radius: 15;
     -fx-padding: 10 14 10 14;
 }
 
+/*noinspection ALL*/
 .dyuque-bubble .label {
     -fx-text-fill: #FFFFFF;
 }
 
 /* Let the root background show through the ScrollPane */
+/*noinspection ALL*/
 .scroll-pane {
     -fx-background-color: transparent;
 }
 
+/*noinspection ALL*/
 .scroll-pane > .viewport {
     -fx-background-color: transparent;
 }

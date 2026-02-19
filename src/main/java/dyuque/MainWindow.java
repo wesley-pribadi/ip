@@ -53,7 +53,7 @@ public class MainWindow extends AnchorPane {
         this.dyuque = dyuque;
 
         // Show welcome message
-        String welcome = dyuque.getWelcomeMessage(); // TODO: Replace with Ui.showWelcome() after refactor to static
+        String welcome = Ui.showWelcome();
         appendDyuqueMessage(welcome);
 
         Platform.runLater(() -> userInput.requestFocus());
