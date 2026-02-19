@@ -18,11 +18,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 
 /**
- * Represents a dialog box consisting of an ImageView to represent the speaker's face
+ * Represents a message box consisting of an ImageView to represent the speaker's face
  * and a label containing text from the speaker.
  */
 @SuppressWarnings("unused")
-public class DialogBox extends HBox {
+public class MessageBox extends HBox {
     private static final int PICTURE_CORNER_RADIUS = 10;
     private static final String FXML_FILEPATH = "/view/DialogBox.fxml";
 
@@ -33,7 +33,7 @@ public class DialogBox extends HBox {
     @FXML
     private StackPane bubble;
 
-    private DialogBox(String text, Image img) {
+    private MessageBox(String text, Image img) {
         loadFxml();
         initializeContent(text, img);
         configureLayout();
@@ -83,10 +83,10 @@ public class DialogBox extends HBox {
         displayPicture.setClip(clip);
     }
 
-    public static DialogBox getUserDialog(String text, Image img) {
-        DialogBox dialogBox = new DialogBox(text, img);
-        dialogBox.applyUserStyling();
-        return dialogBox;
+    public static MessageBox getUserMessage(String text, Image img) {
+        MessageBox messageBox = new MessageBox(text, img);
+        messageBox.applyUserStyling();
+        return messageBox;
     }
 
     private void applyUserStyling() {
@@ -94,10 +94,10 @@ public class DialogBox extends HBox {
         setAlignment(Pos.TOP_RIGHT);
     }
 
-    public static DialogBox getDyuqueDialog(String text, Image img) {
-        DialogBox dialogBox = new DialogBox(text, img);
-        dialogBox.applyDyuqueStyling();
-        return dialogBox;
+    public static MessageBox getDyuqueMessage(String text, Image img) {
+        MessageBox messageBox = new MessageBox(text, img);
+        messageBox.applyDyuqueStyling();
+        return messageBox;
     }
 
     private void applyDyuqueStyling() {
@@ -106,7 +106,7 @@ public class DialogBox extends HBox {
     }
 
     /**
-     * Flips the dialog box such that the ImageView is on the left and text on the right.
+     * Flips the message box such that the ImageView is on the left and text on the right.
      */
     private void flip() {
         ObservableList<Node> tmp = FXCollections.observableArrayList(this.getChildren());

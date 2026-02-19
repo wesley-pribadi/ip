@@ -18,6 +18,9 @@ import javafx.util.Duration;
  * Controller for the main GUI.
  */
 public class MainWindow extends AnchorPane {
+
+    public static final int EXIT_TRANSITION_DELAY = 1500;
+
     // Helper record to encapsulate response data
     private record ResponseResult(
                 String response,
@@ -33,7 +36,7 @@ public class MainWindow extends AnchorPane {
     @FXML
     private ScrollPane scrollPane;
     @FXML
-    private VBox dialogContainer;
+    private VBox messageContainer;
     @FXML
     private TextArea userInput;
     @FXML
@@ -81,8 +84,8 @@ public class MainWindow extends AnchorPane {
     }
 
     /**
-     * Creates two dialog boxes, one echoing user input and the other containing Dyuque's reply
-     * and then appends them to the dialog container. Then clears the user input after processing.
+     * Creates two message boxes, one echoing user input and the other containing Dyuque's reply
+     * and then appends them to the message container. Then clears the user input after processing.
      */
     @FXML
     private void handleUserInput() {
@@ -141,7 +144,7 @@ public class MainWindow extends AnchorPane {
         } catch (FatalDyuqueException e) {
             System.err.println("Caught FatalDyuqueException: " + e.getMessage());
             System.err.flush();
-            Dialogs.showFatalDialogAndExit(e.getMessage());
+            ErrorDialogs.showFatalDialogAndExit(e.getMessage());
             return new ResponseResult(null, false, null);
         } catch (DyuqueException e) {
             return new ResponseResult(null, false, e.getMessage());
@@ -161,19 +164,19 @@ public class MainWindow extends AnchorPane {
 
     private void appendUserMessage(String message) {
         try {
-            dialogContainer.getChildren().add(DialogBox.getUserDialog(message, userImage));
+            messageContainer.getChildren().add(MessageBox.getUserMessage(message, userImage));
         } catch (IllegalStateException e) {
-            // For missing DialogBox.fxml
-            Dialogs.showFatalDialogAndExit(e.getMessage());
+            // For missing MessageBox.fxml
+            ErrorDialogs.showFatalDialogAndExit(e.getMessage());
         }
     }
 
     private void appendDyuqueMessage(String message) {
         try {
-            dialogContainer.getChildren().add(DialogBox.getDyuqueDialog(message, dyuqueImage));
+            messageContainer.getChildren().add(MessageBox.getDyuqueMessage(message, dyuqueImage));
         } catch (IllegalStateException e) {
-            // For missing DialogBox.fxml
-            Dialogs.showFatalDialogAndExit(e.getMessage());
+            // For missing MessageBox.fxml
+            ErrorDialogs.showFatalDialogAndExit(e.getMessage());
         }
     }
 
@@ -182,7 +185,7 @@ public class MainWindow extends AnchorPane {
         sendButton.setDisable(true);
 
         // getResponse handles Ui.showGoodbye()
-        PauseTransition delay = new PauseTransition(Duration.millis(1500));
+        PauseTransition delay = new PauseTransition(Duration.millis(EXIT_TRANSITION_DELAY));
         delay.setOnFinished(e -> Platform.exit());
         delay.play();
     }

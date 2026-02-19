@@ -37,10 +37,10 @@ public class Main extends Application {
             configureStage(stage, scene);
             stage.show();
         } catch (DyuqueException e) {
-            Dialogs.showFatalDialogAndExit(e.getMessage());
+            ErrorDialogs.showFatalDialogAndExit(e.getMessage());
             Platform.exit();
         } catch (IOException e) {
-            Dialogs.showFatalDialogAndExit("Failed to load GUI resources:\n" + e.getMessage());
+            ErrorDialogs.showFatalDialogAndExit("Failed to load GUI resources:\n" + e.getMessage());
             Platform.exit();
         }
     }

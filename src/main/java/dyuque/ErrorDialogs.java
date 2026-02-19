@@ -14,8 +14,8 @@ import javafx.scene.control.TextArea;
  * <p>All dialogs created by this class are blocking and must be
  * invoked on the JavaFX Application Thread.</p>
  */
-public final class Dialogs {
-    private Dialogs() {}
+public final class ErrorDialogs {
+    private ErrorDialogs() {}
 
     /**
      * Displays a modal, resizable fatal error dialog and terminates the application.
