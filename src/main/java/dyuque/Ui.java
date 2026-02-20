@@ -77,7 +77,7 @@ public final class Ui {
      * @param message Formatted error message.
      */
     public static String showError(String message) {
-        return "[ERROR] " + message;
+        return "[ERROR]\n" + message;
     }
 
     /**
@@ -99,10 +99,10 @@ public final class Ui {
     private static void formatTaskListAddNumbers(List<Task> tasks, StringBuilder output) {
         int i = 1;
         for (Task task : tasks) {
-            output.append(i++)
+            output.append(System.lineSeparator())
+                    .append(i++)
                     .append(". ")
-                    .append(task)
-                    .append(System.lineSeparator());
+                    .append(task);
         }
     }
 
@@ -110,9 +110,9 @@ public final class Ui {
         output.append("You have (").append(tasks.size()).append(") ");
 
         if (isFiltered) {
-            output.append("matching tasks:\n\n");
+            output.append("matching tasks:\n");
         } else {
-            output.append("tasks:\n\n");
+            output.append("tasks:\n");
         }
     }
 
@@ -145,8 +145,7 @@ public final class Ui {
     private static String formatTotalTaskCount(int totalCount) {
         return System.lineSeparator()
                 + System.lineSeparator()
-                + "You now have (" + totalCount + ") tasks."
-                + System.lineSeparator();
+                + "You now have (" + totalCount + ") tasks.";
     }
 
     /**

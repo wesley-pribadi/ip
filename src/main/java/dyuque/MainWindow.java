@@ -73,6 +73,11 @@ public class MainWindow extends AnchorPane {
     public void initialize() {
         scrollPane.setFitToWidth(true);
 
+        // @@author wesley-pribadi-reused
+        // Autoscroll downward after the new messages have been added
+        // See https://github.com/NUS-CS2103-AY2526-S2/forum/issues/157
+        messageContainer.heightProperty().addListener((observable) -> scrollPane.setVvalue(1.0));
+
         // Handles enter-key
         // Needed after switching from TextField to TextArea
         userInput.setOnKeyPressed(event -> {
@@ -98,11 +103,6 @@ public class MainWindow extends AnchorPane {
             return;
         }
         processDyuqueOutput(input);
-
-        // @@author wesley-pribadi-reused
-        // Autoscroll downward after the new messages have been added
-        // See https://github.com/NUS-CS2103-AY2526-S2/forum/issues/157
-        Platform.runLater(() -> scrollPane.setVvalue(1.0));
     }
 
     private String processUserInput() {
@@ -118,12 +118,13 @@ public class MainWindow extends AnchorPane {
 
     private String getAndValidateUserInput() {
         String input = userInput.getText();
-        if (input == null || input.trim().isEmpty()) {
+        String sanitizedInput = Parser.sanitizeNewlinesAndBlanks(input);
+
+        if (sanitizedInput.isBlank()) {
             userInput.clear();
             return null;
         }
-        input = input.stripTrailing();
-        return input;
+        return sanitizedInput;
     }
 
     private void updateUiWithUserInput(String input) {

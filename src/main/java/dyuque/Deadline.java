@@ -30,7 +30,7 @@ public class Deadline extends Task {
             return LocalDate.parse(dueDateStr); // ISO-8601: yyyy-MM-dd
         } catch (DateTimeParseException e) {
             throw new DyuqueException(
-                    "Invalid date format for deadline /by. Please use YYYY-MM-DD (e.g., 2026-12-30).",
+                    "Invalid date format for /by field.\nPlease use YYYY-MM-DD (e.g., 2026-12-30).",
                     e
             );
         }

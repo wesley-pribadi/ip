@@ -172,7 +172,8 @@ You now have (3) tasks.
 If there is nothing left to undo:
 
 ```
-[ERROR] Nothing to undo.
+[ERROR]
+Nothing to undo.
 ```
 
 ---

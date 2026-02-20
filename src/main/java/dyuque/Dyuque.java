@@ -129,7 +129,7 @@ public class Dyuque {
      * @throws DyuqueException If the input cannot be parsed or the command fails to execute.
      */
     public String getResponse(String input) throws DyuqueException {
-        CommandArgumentPair pair = parser.parseCommand(input);
+        CommandArgumentPair pair = parser.parseInput(input);
         return executeCommand(pair);
     }
 

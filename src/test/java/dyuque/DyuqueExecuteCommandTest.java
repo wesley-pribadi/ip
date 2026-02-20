@@ -44,7 +44,7 @@ class DyuqueExecuteCommandTest {
         @Test
         @DisplayName("should show goodbye message on 'bye' command")
         void byeCommand_returnsGoodbyeMessage() throws DyuqueException {
-            CommandArgumentPair pair = parser.parseCommand("bye");
+            CommandArgumentPair pair = parser.parseInput("bye");
             String output = dyuque.executeCommand(pair);
 
             assertAll(
@@ -57,7 +57,7 @@ class DyuqueExecuteCommandTest {
         @Test
         @DisplayName("should add todo task and return confirmation")
         void todoCommand_addsTaskAndReturnsMessage() throws DyuqueException {
-            CommandArgumentPair pair = parser.parseCommand("todo read book");
+            CommandArgumentPair pair = parser.parseInput("todo read book");
             String output = dyuque.executeCommand(pair);
 
             assertAll(
@@ -72,7 +72,7 @@ class DyuqueExecuteCommandTest {
         @Test
         @DisplayName("should throw DyuqueException with NumberFormatException cause for invalid mark argument")
         void markCommand_nonInteger_throwsDyuqueException() throws DyuqueException {
-            CommandArgumentPair pair = parser.parseCommand("mark abc");
+            CommandArgumentPair pair = parser.parseInput("mark abc");
 
             DyuqueException ex = assertThrows(DyuqueException.class, () -> dyuque.executeCommand(pair));
             assertAll(
@@ -84,13 +84,13 @@ class DyuqueExecuteCommandTest {
     }
 
     @Nested
-    @DisplayName("parseCommand()")
+    @DisplayName("parseInput()")
     class ParseCommandTests {
 
         @Test
         @DisplayName("should parse mark with non-integer argument successfully")
         void markCommand_nonInteger_parsesCorrectly() throws DyuqueException {
-            CommandArgumentPair pair = parser.parseCommand("mark abc");
+            CommandArgumentPair pair = parser.parseInput("mark abc");
 
             assertAll(
                     () -> assertNotNull(pair),

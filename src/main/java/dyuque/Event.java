@@ -24,8 +24,8 @@ public class Event extends Task {
      */
     public Event(String description, String fromDate, String toDate) throws DyuqueException {
         super(description);
-        this.fromDate = parseIsoDate(fromDate, "event /from");
-        this.toDate = parseIsoDate(toDate, "event /to");
+        this.fromDate = parseIsoDate(fromDate, "/from");
+        this.toDate = parseIsoDate(toDate, "/to");
 
         if (this.toDate.isBefore(this.fromDate)) {
             throw new DyuqueException("End date cannot be before start date.");
@@ -37,7 +37,7 @@ public class Event extends Task {
             return LocalDate.parse(dueDateStr); // ISO-8601: yyyy-MM-dd
         } catch (DateTimeParseException e) {
             throw new DyuqueException(
-                    "Invalid date format for " + field + ". Please use YYYY-MM-DD (e.g., 2026-12-30).",
+                    "Invalid date format for " + field + ".\nPlease use YYYY-MM-DD (e.g., 2026-12-30).",
                     e
             );
         }

@@ -13,8 +13,9 @@ public class Parser {
      * @return Parsed command and associated arguments.
      * @throws DyuqueException If the input is blank, the command is unknown, or the command usage is invalid.
      */
-    public CommandArgumentPair parseCommand(String input) throws DyuqueException {
-        validateNotBlank(input);
+    public CommandArgumentPair parseInput(String input) throws DyuqueException {
+        String sanitizedInput = sanitizeNewlinesAndBlanks(input);
+        validateNotBlank(sanitizedInput);
 
         // Splits "deadline return book /by Sunday" into ["deadline", "return book /by Sunday"]
         String[] commandAndArguments = input.trim().split(" ", 2);
@@ -23,6 +24,27 @@ public class Parser {
         Dyuque.Command command = extractCommand(commandAndArguments);
         String arguments = extractArguments(commandAndArguments);
         return parseCommandArguments(command, arguments);
+    }
+
+    /**
+     * Removes all Unicode line break sequences from the input string,
+     * then strips leading and trailing whitespace.
+     * <p>
+     * This is intended for sanitizing single‑line command input where
+     * newlines are considered unexpected noise (e.g., from copy‑paste).
+     * Line breaks are simply deleted, not replaced with spaces.
+     *
+     * @param input the string to sanitize (can be {@code null})
+     * @return a string with all line breaks removed, and leading/trailing
+     *         whitespace trimmed; never {@code null} (empty string if input is {@code null})
+     */
+    public static String sanitizeNewlinesAndBlanks(String input) {
+        if (input == null) {
+            return "";
+        }
+        return input
+                .replaceAll("\\R+", "")
+                .strip();
     }
 
     private static void validateNotBlank(String input) throws DyuqueException {

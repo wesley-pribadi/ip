@@ -21,8 +21,9 @@ public class DyuqueException extends Exception {
      */
     public DyuqueException(String customErrorMessage, Throwable cause) {
         super(customErrorMessage
-                + "\n"
-                + cause.toString(),
+                + "\n\n"
+                + "[ERROR HELP]\n"
+                + cause.getMessage(),
                 cause);
     }
 }
