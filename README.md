@@ -118,7 +118,8 @@ src/
 
 ---
 
-## Code Reuse and Credits
+## Code Reuse Credits and AI declaration
+* Claude was used to generate chat bubble "profile pictures".
 * AI was used for a large portion of generating Javadocs to help me learn best practices and save time.
 * AI was used extensively in certain classes like Parser, Storage, and JavaFX classes.
 * AI was also used in general for refining my high-level design plans and troubleshooting.

@@ -28,6 +28,7 @@ public class MainWindow extends AnchorPane {
                 String errorMessage) {
     }
 
+    // Images generated via Claude (SVG converted to PNG)
     private final Image userImage = new Image(Objects.requireNonNull(
             getClass().getResource("/images/user-icon.png")).toExternalForm());
     private final Image dyuqueImage = new Image(Objects.requireNonNull(
