@@ -19,21 +19,19 @@ public final class Ui {
      */
     public static String showHelp() {
         return """
-                Commands:
-                  "list" --- list tasks
-                  "find" --- find tasks by description
-                             find <keyword>
-                  "delete" - delete a task
-                  "mark" --- mark a task as done
-                             mark <task number>
-                  "unmark" - unmark a task as done
-                             unmark <task number>
-                  "bye" ---- quit Dyuque
-                  "undo" --- undo previous state change
-                Task types:
-                  todo ----- "todo <description>"
-                  deadline - "deadline <description> /by <YYYY-MM-DD>"
-                  event ---- "event <description> /from <YYYY-MM-DD> /to <YYYY-MM-D"
+                Add a Task:
+                  "todo" — todo <description>
+                  "deadline" — deadline <description> /by <YYYY-MM-DD>
+                  "event" — event <description> /from <YYYY-MM-DD> /to <YYYY-MM-DD>
+
+                Other commands:
+                  "list" (List tasks)
+                  "find" (Find tasks by description) — find <keyword>
+                  "mark" (Mark a task as done) — mark <task number>
+                  "unmark" (Unmark a task as done) — unmark <task number>
+                  "delete" (Delete a task) — delete <task number>
+                  "undo" (Undo state change)
+                  "bye" (Quit Dyuque)
                 """;
     }
 
